@@ -1,0 +1,70 @@
+#!/bin/bash
+
+# bash_aliases
+
+# Allow aliases to be with sudo
+alias sudo="sudo "
+
+# Easier navigation: .., ..., ~ and -
+alias ..="cd .."
+alias ...="cd ../.."
+alias ....="cd ../../.."
+alias .....="cd ../../../.."
+
+# List dir contents aliases
+# ref: http://ss64.com/osx/ls.html
+# Short form, colored and type indicated by color
+alias l="ls -FG"
+# List all except . and ..., color, mark file types, long form no user group, file size
+alias la="ls -AGFoh"
+# List all except . and ..., color, mark file types, long form no use group, order by last modified, file size
+alias lat="ls -AGFoth"
+# Thanks, Andy Gill!
+alias lathr="ls -lathr"
+
+#
+# These are the nice Git aliases I got from Bob Beaty
+#
+alias gad='git add .'
+alias ga='git add'
+alias gb='git branch'
+alias gco='git co'
+alias gcp='git cherry-pick'
+alias gd='git diff'
+alias gf='git fetch'
+alias gp='git push'
+alias gst='git status'
+alias gsh='git show HEAD'
+
+# Concatenate and print content of files (add line numbers)
+alias catn="cat -n"
+
+alias bytes="stat -f%40N\ %z"
+alias nodots="ls *([^.])" # requires extglob
+
+# Network diagnostics
+alias ip="curl icanhazip.com"
+alias localip="ipconfig getifaddr en0"
+alias speedtest="wget -O /dev/null http://speedtest.wdc01.softlayer.com/downloads/test10.zip"
+
+# Copy my public key to the pasteboard
+alias pubkey="more ~/.ssh/id_rsa.pub | pbcopy | printf '=> Public key copied to pasteboard.\n'"
+
+# Flush DNS cache
+alias flushdns="dscacheutil -flushcache"
+
+# Empty the Trash on all mounted volumes and the main HDD
+# Also, clear Apple’s System Logs to improve shell startup speed
+alias emptytrash="sudo rm -rfv /Volumes/*/.Trashes; sudo rm -rfv ~/.Trash; sudo rm -rfv /private/var/log/asl/*.asl"
+
+# Show/hide hidden files in Finder
+alias showdotfiles="defaults write com.apple.finder AppleShowAllFiles -bool true && killall Finder"
+alias hidedotfiles="defaults write com.apple.finder AppleShowAllFiles -bool false && killall Finder"
+
+# Hide/show all desktop icons (useful when presenting)
+alias showdeskicons="defaults write com.apple.finder CreateDesktop -bool true && killall Finder"
+alias hidedeskicons="defaults write com.apple.finder CreateDesktop -bool false && killall Finder"
+
+# tmux and emacs with proper colors
+alias tmux="TERM=xterm-256color tmux"
+alias emacs='TERM=xterm-256color emacs -nw' # TODO: learn how to configure Cocoa Emacs :/

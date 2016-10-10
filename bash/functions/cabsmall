@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+
+# Quick, minimal cabal project
+cabsmall() {
+  local name="$1"
+
+  # Usage
+  if [[ -z "$name" ]]; then
+    echo "usage: cabalinit PROJECT_NAME [HACKAGE_DEP1 HACKAGE_DEP2]" 1>&2
+    return 1
+  fi
+
+  # Set up project directory
+  if [[ -a "./$name" ]]; then
+    echo "$name already exists in the current directory" 1>&2
+    return 1
+  fi
+  mkdir "$name"
+  shift
+
+  # Setup .cabal file
+  echo "name: $name
+version: 0.0.0
+build-type: Simple
+cabal-version: >= 1.20
+
+executable $name
+  main-is: Main.hs
+  default-language: Haskell2010
+  default-extensions:
+    -- better syntax
+      BangPatterns
+    , OverloadedStrings
+    , TupleSections
+    , TypeSynonymInstances
+    -- better types
+    , ConstraintKinds
+    , ExistentialQuantification
+    , FlexibleContexts
+    , FlexibleInstances
+    , FunctionalDependencies
+    , GADTs
+    , GeneralizedNewtypeDeriving
+    , MultiParamTypeClasses
+    , StandaloneDeriving
+    , TypeFamilies
+  ghc-options: -Wall -O2
+  build-depends:
+      base >= 4.7 && < 4.8" > "$name/$name.cabal"
+  # Add optional packages to end of .cabal
+  for arg; do
+      echo -e "    , $arg" >> "$name/$name.cabal"
+  done
+
+  # Minimal Main.hs
+  echo 'module Main where
+
+
+main :: IO ()
+main = return ()
+' > "$name/Main.hs"
+  
+  (cd $name && cabal sandbox init && cabal install -j7 --only-dependencies) &
+  echo "Reminder: cabal sandbox config paths are hardcoded--do not move your new project!"
+}

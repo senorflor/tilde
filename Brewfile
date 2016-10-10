@@ -1,0 +1,25 @@
+tap  'caskroom/versions'
+brew 'mas'            # for Mac App Store stuff
+
+brew 'coreutils'
+brew 'bash-completion'
+brew 'node' # lots of internet noise around this; evaluate.
+brew 'npm'
+brew 'tree'
+brew 'wget'
+brew 'emacs', args: ['with-cocoa', 'with-gnutls', 'srgb']
+brew 'jenv'
+
+cask 'google-chrome'
+cask 'iterm2'
+cask 'java7'
+cask 'java'
+cask 'java9-beta'
+cask 'karabiner'
+cask 'slate'
+
+mas '1Password', id: 443987910
+mas 'Xcode', id: 497799835
+mas 'Kindle', id: 405399194
+mas 'Slack', id: 803453959
+mas 'OmniFocus', id: 867299399

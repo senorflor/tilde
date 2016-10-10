@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+add () {
+    local usage="Given a field separator and n, add the nth field for all lines in stdout"
+    if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+        echo $usage
+        return
+    fi
+    awk -v FS=$1 -v N=$2 '{ SUM += $N } END { print SUM }'
+}
+
+average () {
+    local usage="Given a field separator and n, average the nth field for all lines in stdout"
+    if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+        echo $usage
+        return
+    fi
+    awk -v FS=$1 -v N=$2 '{ SUM += $N; COUNT += 1 } END { print SUM/COUNT }'
+}

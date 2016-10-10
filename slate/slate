@@ -1,0 +1,17 @@
+#This is the default .slate file.
+# If no ~/.slate file exists this is the file that will be used.
+
+config defaultToCurrentScreen true
+
+# Switch monitors
+bind up:ctrl;alt throw above
+bind down:ctrl;alt throw below
+
+# Full Screen
+bind space:ctrl;alt move screenOriginX;screenOriginY screenSizeX;screenSizeY
+
+# Left Half
+bind left:ctrl;alt move screenOriginX;screenOriginY screenSizeX/2;screenSizeY
+
+# Right Half
+bind right:ctrl;alt move screenOriginX+screenSizeX/2;screenOriginY screenSizeX/2;screenSizeY

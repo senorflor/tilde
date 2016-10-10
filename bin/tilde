@@ -1,0 +1,224 @@
+#!/usr/bin/env bash
+
+# Overrideable variables: where to install, and which repo branch to
+# use. TODO: these should probably just be flag opts for
+# simplicity/consistency.
+: ${TILDE_DIRECTORY:="${HOME}/.tilde"}
+: ${TILDE_BRANCH:="master"}
+# Other tilde-specific vars, which should be changed if you fork the repo.
+TILDE_TARBALL="https://github.com/senorflor/tilde/tarball/${TILDE_BRANCH}"
+TILDE_GIT_REMOTE="git@github.com:senorflor/tilde.git"
+
+# Help text
+read -r -d '' TILDE_HELP << EOS
+Tilde - OSX (10.9+) system, dev environment, and dotfiles configuration
+
+  Repo: github.com/senorflor/tilde
+
+  Usage: $(basename "$0") [command] [options]
+
+  Commands:
+    help     print this help text
+    update   update applications and config files (default)
+EOS
+
+# We take advantage of Bash's dynamic scope to present this script top
+# down. It's essentially a transliteration of @necolas's incredible
+# dotfiles repo, from which I've learned and copied much, -vim, +the
+# usual magpie accumulation of config. Inlining everything for now to
+# see what rational pieces it eventually breaks into for my own use.
+main() {
+  get_tilde # if not already present
+  cd ${TILDE_DIRECTORY}
+  parse_commmand
+  ensure_deps
+  update_repo_and_pkgs
+  link_dotfiles
+  update_osx_defaults
+}
+
+get_tilde() {
+  if [[ -f ${TILDE_DIRECTORY} ]]; then
+    print_failure "There is a file at \"${TILDE_DIRECTORY}\"; "
+    print_failure "please move it and try again.\n"
+    exit_error
+  fi
+
+  if [[ ! -d ${TILDE_DIRECTORY} ]]; then
+    print_header "Downloading tilde...\n"
+
+    # Get and extract the tarball
+    mkdir ${TILDE_DIRECTORY}
+    curl -fsSLo ${HOME}/tilde.tar.gz ${TILDE_TARBALL_PATH}
+    tar -zxf ${HOME}/tilde.tar.gz --strip-components 1 -C ${TILDE_DIRECTORY}
+    rm -rf ${HOME}/tilde.tar.gz
+  fi    
+}
+
+parse_command() {
+  case $command in
+    help) print_help; exit ;;
+    install) ;;
+    [^-]*) print_warn "Invalid command: $command. Exiting."; exit_error ;;
+  esac
+}
+
+ensure_deps() {
+  # Ensure Homebrew is present (will also install xCode CLI where possible).
+  if ! cmd_exists 'brew'; then
+    if [[ TILDE_FETCH == true ]]; then
+      print_header "Start: Installing Homebrew"
+      /usr/bin/ruby -e "$(curl -fsSL \
+          https://raw.githubusercontent.com/Homebrew/install/master/install)"
+      print_header "End: Installing Homebrew"
+    else
+      print_failure "Homebrew is missing and unable to be fetched"
+    fi
+  fi
+
+  # Ensure git is installed.
+  if ! cmd_exists 'git'; then
+    print_header "Start: Installing git"
+    brew update
+    brew install git
+    print_header "End: Installing git"
+  fi
+}
+
+update_repo_and_pkgs() {
+  # Initialize and update tilde repo
+  if ! in_git_repo; then
+    print_header "Start: Initializing git repository"
+    git init
+    git remote add origin ${TILDE_GIT_REMOTE}
+    git fetch origin ${TILDE_BRANCH}
+    # Reset the index and working tree to the fetched HEAD
+    # (submodules are cloned in the subsequent sync step)
+    git reset --hard FETCH_HEAD
+    # Remove any untracked files
+    git clean -fd
+    print_header "End: Initializing git repository"
+  fi
+  print_header "Syncing tilde..."
+  git pull --rebase origin ${TILDE_BRANCH}
+  git submodule update --recursive --init --quiet
+
+  # Install Homebrew packages (leaving user to upgrade outdated ones
+  # manually).
+  if brew list | grep -Fq brew-cask; then
+      print_header "Uninstalling old Homebrew-Cask ..."
+      brew uninstall --force brew-cask
+  fi
+  print_header "Begin: Installing brew packages"
+  brew update
+  brew tap homebrew/bundle # for Brewfile-based installation
+  brew bundle --file="${TILDE_DIRECTORY}/brew/Brewfile"
+  print_header "End: Installing brew packages"
+  print_header "Outdated Homebrew packages"
+  brew outdated
+  print_header "Outdated mas (Mac App Store) packages"
+  mas outdated
+}
+
+link_dotfiles() {
+  # We copy this file since it later receives writes from
+  # .bash_profile.local.
+  cp ${TILDE_DIRECTORY}/git/gitconfig ${HOME}/.gitconfig
+  
+  # Get rid of any existing emacs and karabiner config.
+  [[ -e "${HOME}/.emacs.d" ]] && rm -rf "${HOME}/.emacs.d"
+  # TODO: this seemed necessary a few years ago; check again.
+  local karabiner_dir="Library/Application Support/Karabiner"
+  [[ -d "${HOME}/${karabiner_dir}" ]] && rm -f "${HOME}/${karabiner_dir}/private.xml"
+
+  # Link all the config files
+  link "bash/bashrc"           ".bashrc"
+  link "bash/bash_profile"     ".bash_profile"
+  link "bash/inputrc"          ".inputrc"
+  link "brew/Brewfile"         ".Brewfile"
+  link "emacs"                 ".emacs.d"
+  link "git/gitattributes"     ".gitattributes"
+  link "git/gitignore"         ".gitignore"
+  link "karabiner/private.xml" "${HOME}/${karabiner_dir}/private.xml"
+  link "lein/profiles.clj"     ".lein/profiles.clj"
+  link "shell/curlrc"          ".curlrc"
+  link "slate/slate"           ".slate"
+  link "tmux/tmux.conf"        ".tmux.conf"
+  # iTerm won't pick up a dot-prefixed file for whatever reason
+  link "iterm/solarized.dark.itermcolors.txt" "solarized.dark.itermcolors.txt"
+}
+
+update_osx_defaults() {
+  bash ./bin/osxdefaults
+}
+
+### Utils #####################################################################
+
+# Calling exit_error from any function/subshell where this is in scope
+# will exit tilde.
+TILDE_PID="$$"
+exit_error() {
+  kill -s USR1 $TILDE_PID
+}
+trap "echo 'Error: exiting Tilde' && exit 1" USR1
+
+# Some utils to let us print with style
+bold="$(tput bold)"
+green="$(tput setaf 2)"
+red="$(tput setaf 1)"
+underline="$(tput smul)"
+revert_style="$(tput sgr0)";
+
+print_header() {
+  printf "\n${underline}==== $@ ====${revert_style}\n"
+}
+
+print_warn() {
+  printf "${bold}$@${revert_style}"
+}
+
+print_info() {
+  printf "  info: $@"
+}
+
+print_debug() {
+  [[ "$TILDE_DEBUG" == true ]]  && printf "    debug: $@"
+}
+
+print_success() {
+  printf "${green}✓ $@${revert_style}"
+}
+
+print_failure() {
+  printf "${red}x $@${revert_style}"
+}
+
+print_help() {
+  printf "$TILDE_HELP"
+}
+
+seek_confirmation() {
+  print_warn "$@"
+  read -p "Continue? (y/n) " -n 1
+  printf "\n"
+}
+
+is_confirmed() {
+  [[ "$REPLY" =~ ^[Yy]$ ]] && return 0 || return 1
+}
+
+in_git_repo() {
+  $(git rev-parse --is-inside-work-tree &> /dev/null)
+}
+
+cmd_exists() {
+  [[ $(type -P $1) ]] && return 0 || return 1
+}
+
+link() {
+    ln -fs "${TILDE_DIRECTORY}/${1}" "${HOME}/${2}"
+}
+
+### Go go go! #################################################################
+main
+exit

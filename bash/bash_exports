@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# bash_exports
+
+# Make emacs the default editor
+export EDITOR="emacs"
+
+# Ignore duplicate commands in the history
+# export HISTCONTROL=ignoredups
+
+# Increase the maximum number of lines contained in the history file
+# (default is 500)
+export HISTFILESIZE=10000000 # keep this massive for later analytics
+
+# Increase the maximum number of commands to remember
+# (default is 500)
+export HISTSIZE=10000
+
+# Make some commands not show up in history
+# export HISTIGNORE="ls:[ \t]*:cd:cd -:pwd;exit:date:* --help"
+
+# Don't clear the screen after quitting a manual page
+export MANPAGER="less -X"
+
+# Make new shells get the history lines from all previous
+# shells instead of the default "last window closed" history
+export PROMPT_COMMAND="history -a; $PROMPT_COMMAND"
+
+# Dirty, dirty virtualenv
+if [[ -r "/usr/local/bin/virtualenvwrapper.sh" ]]; then
+  export WORKON_HOME=$HOME/.virtualenvs
+  export PROJECT_HOME=$HOME/projects
+fi

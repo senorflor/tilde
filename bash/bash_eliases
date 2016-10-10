@@ -1,0 +1,10 @@
+# Aliases for Eli
+alias sing="say -v pipe"
+alias speak="say -r 2 -v zarvox santa claus mickey mouse santa claus mickey mouse santa whats in your sleigh mickey whats in your clubhouse"
+alias morning="say good morning"
+alias night="say good night"
+alias whoosh="say ffwhoooooooooooooshhhhh"
+alias vroom="say -r 2 vrooooommmmmmmmmmmmmmmmmmm"
+function song() {
+  say $1 $1 whats in your $1
+}
