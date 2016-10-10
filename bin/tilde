@@ -66,14 +66,13 @@ parse_command() {
 ensure_deps() {
   # Ensure Homebrew is present (will also install xCode CLI where possible).
   if ! cmd_exists 'brew'; then
-    if [[ TILDE_FETCH == true ]]; then
-      print_header "Start: Installing Homebrew"
-      /usr/bin/ruby -e "$(curl -fsSL \
-          https://raw.githubusercontent.com/Homebrew/install/master/install)"
-      print_header "End: Installing Homebrew"
-    else
-      print_failure "Homebrew is missing and unable to be fetched"
-    fi
+    print_header "Start: Installing Homebrew"
+    xcode-select --install
+    sudo xcodebuild --license
+    /usr/bin/ruby -e "$(curl -fsSL \
+        https://raw.githubusercontent.com/Homebrew/install/master/install)" || \
+        exit_error
+    print_header "End: Installing Homebrew"
   fi
 
   # Ensure git is installed.
