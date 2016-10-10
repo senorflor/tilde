@@ -3,14 +3,14 @@
 # bash_profile
 
 declare -a files=(
-    $HOME/.dotfiles/bash/bash_options # Options
-    $HOME/.dotfiles/bash/bash_exports # Exports
-    $HOME/.dotfiles/bash/bash_aliases # Aliases
-    $HOME/.dotfiles/bash/bash_eliases # For Eli
-    $HOME/.dotfiles/bash/functions/* # Functions
-    $HOME/.dotfiles/bash/bash_prompt # Custom bash prompt
+    $HOME/.tilde/bash/bash_options # Options
+    $HOME/.tilde/bash/bash_exports # Exports
+    $HOME/.tilde/bash/bash_aliases # Aliases
+    $HOME/.tilde/bash/bash_eliases # For Eli
+    $HOME/.tilde/bash/functions/* # Functions
+    $HOME/.tilde/bash/bash_prompt # Custom bash prompt
     $HOME/.bash_profile.local # Local and private settings not under version control (e.g. git credentials)
-    $HOME/.dotfiles/bash/bash_paths # Path modifications (must source after `.bash_profile.local` in case of custom `brew` location)
+    $HOME/.tilde/bash/bash_paths # Path modifications (must source after `.bash_profile.local` in case of custom `brew` location)
     /usr/local/bin/virtualenvwrapper.sh # Python virtualenvwrapper
 )
 
