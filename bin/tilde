@@ -124,8 +124,9 @@ link_dotfiles() {
   # .bash_profile.local.
   cp ${TILDE_DIRECTORY}/git/gitconfig ${HOME}/.gitconfig
   
-  # Get rid of any existing emacs and karabiner config.
+  # Get rid of any existing emacs, lein, and karabiner config.
   [[ -e "${HOME}/.emacs.d" ]] && rm -rf "${HOME}/.emacs.d"
+  [[ -e "${HOME}/.lein" ]] && rm -rf "${HOME}/.lein"
   # TODO: this seemed necessary a few years ago; check again.
   local karabiner_dir="Library/Application Support/Karabiner"
   [[ -d "${HOME}/${karabiner_dir}" ]] && rm -f "${HOME}/${karabiner_dir}/private.xml"
