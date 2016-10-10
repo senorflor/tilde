@@ -30,7 +30,7 @@ EOS
 main() {
   get_tilde # if not already present
   cd ${TILDE_DIRECTORY}
-  parse_commmand
+  parse_command $1
   ensure_deps
   update_repo_and_pkgs
   link_dotfiles
@@ -56,10 +56,10 @@ get_tilde() {
 }
 
 parse_command() {
-  case $command in
-    help) print_help; exit ;;
+  case $1 in
+    "help") print_help && exit ;;
     install) ;;
-    [^-]*) print_warn "Invalid command: $command. Exiting."; exit_error ;;
+    [^-]*) print_warn "Invalid command: $1.\n" && exit_error ;;
   esac
 }
 
@@ -139,7 +139,7 @@ link_dotfiles() {
   link "emacs"                 ".emacs.d"
   link "git/gitattributes"     ".gitattributes"
   link "git/gitignore"         ".gitignore"
-  link "karabiner/private.xml" "${HOME}/${karabiner_dir}/private.xml"
+  link "karabiner/private.xml" "${karabiner_dir}/private.xml"
   link "lein/profiles.clj"     ".lein/profiles.clj"
   link "shell/curlrc"          ".curlrc"
   link "slate/slate"           ".slate"
@@ -220,5 +220,5 @@ link() {
 }
 
 ### Go go go! #################################################################
-main
+main $1
 exit
