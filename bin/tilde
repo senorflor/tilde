@@ -139,7 +139,7 @@ link_dotfiles() {
   link "git/gitattributes"     ".gitattributes"
   link "git/gitignore"         ".gitignore"
   link "karabiner/private.xml" "${karabiner_dir}/private.xml"
-  link "lein/profiles.clj"     ".lein/profiles.clj"
+  link "lein"                  ".lein"
   link "shell/curlrc"          ".curlrc"
   link "slate/slate"           ".slate"
   link "tmux/tmux.conf"        ".tmux.conf"

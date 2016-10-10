@@ -5,6 +5,7 @@ brew 'coreutils'
 brew 'bash-completion'
 brew 'node' # lots of internet noise around this; evaluate.
 brew 'npm'
+brew 'rbenv'
 brew 'tree'
 brew 'wget'
 brew 'emacs', args: ['with-cocoa', 'with-gnutls', 'srgb']
