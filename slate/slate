@@ -4,14 +4,23 @@
 config defaultToCurrentScreen true
 
 # Switch monitors
-bind up:ctrl;alt throw above
-bind down:ctrl;alt throw below
+bind up:ctrl;alt;cmd throw above
+bind down:ctrl;alt;cmd throw below
+bind left:ctrl;alt;cmd throw left
+bind right:ctrl;alt;cmd throw right
 
-# Full Screen
+# Full screen window
 bind space:ctrl;alt move screenOriginX;screenOriginY screenSizeX;screenSizeY
 
-# Left Half
+# Half screen window
+bind up:ctrl;alt move screenOriginX;screenOriginY screenSizeX;screenSizeY/2
+bind down:ctrl;alt move screenOriginX;screenOriginY+screenSizeY/2 screenSizeX;screenSizeY
 bind left:ctrl;alt move screenOriginX;screenOriginY screenSizeX/2;screenSizeY
-
-# Right Half
 bind right:ctrl;alt move screenOriginX+screenSizeX/2;screenOriginY screenSizeX/2;screenSizeY
+
+# Quarter screen window
+bind left:ctrl;alt;cmd;shift move screenOriginX;screenOriginY screenSizeX/2;screenSizeY/2
+bind up:ctrl;alt;cmd;shift move screenOriginX+screenSizeX/2;screenOriginY screenSizeX;screenSizeY/2
+bind down:ctrl;alt;cmd;shift move screenOriginX;screenOriginY+screenSizeY/2 screenSizeX/2;screenSizeY
+bind right:ctrl;alt;cmd;shift move screenOriginX+screenSizeX/2;screenOriginY+screenSizeY/2 screenSizeX;screenSizeY
+
