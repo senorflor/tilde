@@ -1,27 +1,50 @@
-tap  'caskroom/versions'
-brew 'mas'            # for Mac App Store stuff
+tap  'caskroom/versions' # for e.g. Java 9
+brew 'mas' # for Mac App Store stuff
 
-brew 'coreutils'
+# Bash and general CLI tools
 brew 'bash-completion'
-brew 'node' # lots of internet noise around this; evaluate.
-brew 'npm'
-brew 'rbenv'
+brew 'coreutils'
 brew 'tree'
 brew 'wget'
-brew 'emacs', args: ['with-cocoa', 'with-gnutls', 'srgb']
-brew 'jenv'
 
-cask 'dropbox'
-cask 'google-chrome'
-cask 'iterm2'
+# Cloud CLIs
+cask 'google-cloud-sdk'
+brew 'awscli'
+
+# Editor
+brew 'emacs', args: ['with-cocoa', 'with-gnutls', 'srgb']
+
+# JS
+brew 'node' # lots of internet noise around this; evaluate.
+brew 'npm'
+brew 'yarn'
+
+# Ruby
+brew 'rbenv'
+brew 'ruby-build'
+
+# Python
+brew 'python'
+
+# Java
+brew 'jenv'
 cask 'java7'
 cask 'java'
 cask 'java9-beta'
+
+# OS/Environment mod apps
+cask 'dropbox'
 cask 'karabiner'
 cask 'slate'
 
+# Plane, lathe, chisel, etc.
+cask 'google-chrome'
+cask 'iterm2'
+
+# All mas stuff so that password prompt comes as late as possible
 mas '1Password', id: 443987910
 mas 'Xcode', id: 497799835
 mas 'Kindle', id: 405399194
-mas 'Slack', id: 803453959
 mas 'OmniFocus', id: 867299399
+mas 'Slack', id: 803453959 # TODO not sure this needs a mas install
+                           # vs. e.g. cask; what's the benefit?
