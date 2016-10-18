@@ -11,8 +11,9 @@ brew 'wget'
 cask 'google-cloud-sdk'
 brew 'awscli'
 
-# Editor
+# Editors
 brew 'emacs', args: ['with-cocoa', 'with-gnutls', 'srgb']
+cask 'macdown'
 
 # JS
 brew 'node' # lots of internet noise around this; evaluate.
@@ -40,6 +41,7 @@ cask 'slate'
 # Plane, lathe, chisel, etc.
 cask 'google-chrome'
 cask 'iterm2'
+cask 'postman'
 
 # All mas stuff so that password prompt comes as late as possible
 mas '1Password', id: 443987910
