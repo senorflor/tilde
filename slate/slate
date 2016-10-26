@@ -14,7 +14,7 @@ bind space:ctrl;alt move screenOriginX;screenOriginY screenSizeX;screenSizeY
 
 # Half screen window
 bind up:ctrl;alt move screenOriginX;screenOriginY screenSizeX;screenSizeY/2
-bind down:ctrl;alt move screenOriginX;screenOriginY+screenSizeY/2 screenSizeX;screenSizeY
+bind down:ctrl;alt move screenOriginX;screenOriginY+screenSizeY/2 screenSizeX;screenSizeY/2
 bind left:ctrl;alt move screenOriginX;screenOriginY screenSizeX/2;screenSizeY
 bind right:ctrl;alt move screenOriginX+screenSizeX/2;screenOriginY screenSizeX/2;screenSizeY
 
