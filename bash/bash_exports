@@ -31,3 +31,8 @@ if [[ -r "/usr/local/bin/virtualenvwrapper.sh" ]]; then
   export WORKON_HOME=$HOME/.virtualenvs
   export PROJECT_HOME=$HOME/projects
 fi
+
+# Android sdk
+if [[ -d "$HOME/Library/Android/sdk" ]]; then
+  export ANDROID_HOME=~/Library/Android/sdk
+fi

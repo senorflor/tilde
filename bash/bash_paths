@@ -22,6 +22,8 @@ declare -a dirs_to_append=(
     "$HOME/.cabal/bin"
     "$GOPATH/bin"
     "$(brew --prefix)/opt/go/libexec/bin"
+    "$HOME/Library/Android/sdk/tools"
+    "$HOME/Library/Android/sdk/platform-tools"
 )
 
 # Prepend directories to PATH
