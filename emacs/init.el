@@ -71,6 +71,21 @@
 (setq-default tab-width 2
 	      standard-indent 2
 	      indent-tabs-mode nil)
+(global-set-key (kbd "C-x C-<up>") 'windmove-up)
+(global-set-key (kbd "C-x C-<down>") 'windmove-down)
+(global-set-key (kbd "C-x C-<left>") 'windmove-left)
+(global-set-key (kbd "C-x C-<right>") 'windmove-right)
+
+;; OS X copy to clipboard on C-w
+(defun copy-from-osx ()
+  (shell-command-to-string "pbpaste"))
+(defun paste-to-osx (text &optional push)
+  (let ((process-connection-type nil))
+    (let ((proc (start-process "pbcopy" "*Messages*" "pbcopy")))
+      (process-send-string proc text)
+      (process-send-eof proc))))
+(setq interprogram-cut-function 'paste-to-osx)
+(setq interprogram-paste-function 'copy-from-osx)
 
 ;;; magit
 (global-set-key (kbd "C-x g") 'magit-status)
