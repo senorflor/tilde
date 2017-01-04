@@ -4,3 +4,4 @@ emacs/ac-comphist.dat
 emacs/elpa
 emacs/projectile-bookmarks.eld
 emacs/eshell
+lein/repl-history
