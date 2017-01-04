@@ -20,16 +20,16 @@
                       markdown-mode
                       yaml-mode
 
-		   ;; Java
-		      ;; malabar-mode
-		      groovy-mode
+                   ;; Java
+                     ;; malabar-mode
+                     groovy-mode
 
                    ;; Clojure
                       ac-cider
                       cider
                       clojure-mode
                       clojurescript-mode
-		      paredit
+                      paredit
 
                    ;; Go
                       go-mode
