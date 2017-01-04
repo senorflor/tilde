@@ -32,7 +32,8 @@ if [[ -r $bash_completion_path ]]; then
     source $bash_completion_path
 fi
 
-# start rbenv
+# start rbenv and jenv
 eval "$(rbenv init -)"
+eval "$(jenv init -)"
 
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
