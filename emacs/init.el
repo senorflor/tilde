@@ -40,8 +40,8 @@
                    ;; Javascript
                       jsx-mode
 
-		    ;; Elm
-		      elm-mode
+                   ;; Elm
+                      elm-mode
 
                    ;; Project nav
                       projectile)

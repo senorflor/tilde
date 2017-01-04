@@ -4,16 +4,22 @@ brew 'mas' # for Mac App Store stuff
 # Bash and general CLI tools
 brew 'bash-completion'
 brew 'coreutils'
+brew 'jq'
 brew 'tree'
 brew 'wget'
 
 # Cloud CLIs
 cask 'google-cloud-sdk'
 brew 'awscli'
+brew 'kubernetes-cli'
 
 # Editors
 brew 'emacs', args: ['with-cocoa', 'with-gnutls', 'srgb']
 cask 'macdown'
+
+# DBs
+brew 'mongo'
+brew 'postgres'
 
 # JS
 brew 'node' # lots of internet noise around this; evaluate.
