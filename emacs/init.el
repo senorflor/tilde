@@ -37,8 +37,8 @@
                    ;; Haskell
                       haskell-mode
 
-                   ;; Javascript
-                      jsx-mode
+                   ;; Al Gore
+                      web-mode
 
                    ;; Elm
                       elm-mode
@@ -128,15 +128,17 @@
 (setq nrepl-log-messages t)
 (setq cider-show-error-buffer 'only-in-repl)
 
-;;; Javascript
-(defun js-custom ()
-  "js-mode-hook"
-  (setq js-indent-level 2))
-(add-hook 'js-mode-hook 'js-custom)
+;;; Al Gore
+(defun its-a-web-mode-hook ()
+  "Web mode customizer"
+  (setq web-mode-markup-indent-offset 2)
+  (setq web-mode-css-indent-offset 2)
+  (setq web-mode-code-indent-offset 2))
+(add-hook 'web-mode-hook 'its-a-web-mode-hook)
 ;; it's just JSX, don't overreact
-(require 'jsx-mode)
-(add-to-list 'auto-mode-alist '("\\.jsx\\'" . jsx-mode))
-(autoload 'jsx-mode "jsx-mode" "JSX mode" t)
+(require 'web-mode)
+(add-to-list 'auto-mode-alist '("\\.js\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.jsx\\'" . web-mode))
 
 ;;; org mode!
 (require 'org-install)
