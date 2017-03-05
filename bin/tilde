@@ -33,6 +33,7 @@ main() {
   parse_command $1
   ensure_deps
   update_repo_and_pkgs
+  install_rustup
   link_dotfiles
   update_osx_defaults
 }
@@ -146,6 +147,13 @@ link_dotfiles() {
   link "tmux/tmux.conf"        ".tmux.conf"
   # iTerm won't pick up a dot-prefixed file for whatever reason
   link "iterm/solarized.dark.itermcolors.txt" "solarized.dark.itermcolors.txt"
+}
+
+install_rustup() {
+  pr_merged=$(curl -f https://api.github.com/repos/Homebrew/homebrew-core/pulls/9617 2>/dev/null | grep -e '"merged".*true' | wc -l)
+  [[ $pr_merged ]] && brew install rustup && \
+      echo "rustup installed via brew: please remove install_rustup() from ~/.tilde/bin/tilde and add rustup to tilde's Brewfile" || \
+          curl https://sh.rustup.rs -sSf | bash
 }
 
 update_osx_defaults() {

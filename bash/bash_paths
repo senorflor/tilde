@@ -24,6 +24,7 @@ declare -a dirs_to_append=(
     "$(brew --prefix)/opt/go/libexec/bin"
     "$HOME/Library/Android/sdk/tools"
     "$HOME/Library/Android/sdk/platform-tools"
+    "$HOME/.cargo/bin:$PATH"
 )
 
 # Prepend directories to PATH
