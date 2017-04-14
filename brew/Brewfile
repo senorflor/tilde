@@ -44,7 +44,6 @@ cask 'java9-beta'
 
 # OS/Environment mod apps
 cask 'dropbox'
-cask 'karabiner'
 cask 'slate'
 
 # Plane, lathe, chisel, etc.
