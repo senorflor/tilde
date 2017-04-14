@@ -28,10 +28,13 @@ brew 'yarn'
 
 # Ruby
 brew 'rbenv'
-brew 'ruby-build'
 
 # Python
-brew 'python'
+brew 'pyenv'
+brew 'pyenv-virtualenv'
+
+# Javascript
+brew 'nodenv'
 
 # Java
 brew 'jenv'
@@ -41,7 +44,6 @@ cask 'java9-beta'
 
 # OS/Environment mod apps
 cask 'dropbox'
-cask 'karabiner'
 cask 'slate'
 
 # Plane, lathe, chisel, etc.
