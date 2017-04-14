@@ -24,10 +24,9 @@ done
 
 unset files
 
-# Only use `brew` after it has been added to the PATH
-bash_completion_path="$(brew --prefix)/etc/bash_completion"
-
+# We only use `brew` after it has been added to the PATH
 # Source Bash completion (installed via Homebrew)
+bash_completion_path="$(brew --prefix)/etc/bash_completion"
 if [[ -r $bash_completion_path ]]; then
     source $bash_completion_path
 fi
