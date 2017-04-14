@@ -28,10 +28,13 @@ brew 'yarn'
 
 # Ruby
 brew 'rbenv'
-brew 'ruby-build'
 
 # Python
-brew 'python'
+brew 'pyenv'
+brew 'pyenv-virtualenv'
+
+# Javascript
+brew 'nodenv'
 
 # Java
 brew 'jenv'
