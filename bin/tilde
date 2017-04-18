@@ -146,10 +146,16 @@ link_dotfiles() {
 }
 
 install_rustup() {
-  pr_merged=$(curl -f https://api.github.com/repos/Homebrew/homebrew-core/pulls/9617 2>/dev/null | grep -e '"merged".*true' | wc -l)
-  [[ $pr_merged ]] && brew install rustup && \
-      echo "rustup installed via brew: please remove install_rustup() from ~/.tilde/bin/tilde and add rustup to tilde's Brewfile" || \
-          curl https://sh.rustup.rs -sSf | bash
+  local pr_url="https://api.github.com/repos/Homebrew/homebrew-core/pulls/9617"
+  local pr_merged=$(curl -f "${pr_url}" 2>/dev/null | \
+                      grep -e '"merged".*true' | \
+                      wc -l)
+  if [[ $pr_merged ]]; then
+    curl https://sh.rustup.rs -sSf | bash
+  else
+    brew install rustup
+    echo "rustup installed via brew: please remove install_rustup() from bin/tilde and add rustup to tilde's Brewfile"
+  fi
 }
 
 update_osx_defaults() {
