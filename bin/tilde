@@ -16,7 +16,7 @@ Tilde - OSX (10.9+) system, dev environment, and dotfiles configuration
 
   Repo: github.com/senorflor/tilde
 
-  Usage: $(basename "$0") [command] [options]
+  Usage: $(basename "$0") [command]
 
   Commands:
     help     print this help text
@@ -29,17 +29,18 @@ EOS
 # usual magpie accumulation of config. Inlining everything for now to
 # see what rational pieces it eventually breaks into for my own use.
 main() {
-  get_tilde # if not already present
+  get_tilde_tarball # if tilde dir not already present
   cd ${TILDE_DIRECTORY}
   parse_command $1
-  ensure_deps
-  update_repo_and_pkgs
+  ensure_deps_installed # incl. homebrew git, which is used below!
+  update_tilde
+  update_packages
   install_rustup
   link_dotfiles
   update_osx_defaults
 }
 
-get_tilde() {
+get_tilde_tarball() {
   if [[ -f ${TILDE_DIRECTORY} ]]; then
     print_failure "There is a file at \"${TILDE_DIRECTORY}\"; "
     print_failure "please move it and try again.\n"
@@ -65,28 +66,34 @@ parse_command() {
   esac
 }
 
-ensure_deps() {
-  # Ensure Homebrew is present (will also install xCode CLI where possible).
+ensure_deps_installed() {
+  # Ensure xCode or xCode command line tools are present
+  xcode-select -p &> /dev/null
+  if [[ $? -ne 0 ]]; then
+    print_header "Start: Installing xCode CLI tools"
+    xcode-select --install
+    print_header "End: Installing xCode CLI tools"
+  fi
+
+  # Ensure Homebrew is present
   if ! cmd_exists 'brew'; then
     print_header "Start: Installing Homebrew"
-    xcode-select --install
-    sudo xcodebuild --license
     /usr/bin/ruby -e "$(curl -fsSL \
         https://raw.githubusercontent.com/Homebrew/install/master/install)" || \
         exit_error
     print_header "End: Installing Homebrew"
   fi
 
-  # Ensure git is installed.
-  if ! cmd_exists 'git'; then
-    print_header "Start: Installing git"
-    brew update
+  # Ensure (modern) git is installed.
+  brew list git &> /dev/null
+  if [[ $? -ne 0 ]]; then
+    print_header "Start: Installing Homebrew-provided git"
     brew install git
-    print_header "End: Installing git"
+    print_header "End: Installing Homebrew-provided git"
   fi
 }
 
-update_repo_and_pkgs() {
+update_tilde() {
   # Initialize and update tilde repo
   if ! in_git_repo; then
     print_header "Start: Initializing git repository"
@@ -98,26 +105,30 @@ update_repo_and_pkgs() {
     git reset --hard FETCH_HEAD
     # Remove any untracked files
     git clean -fd
+    # Track upstream branch for local dev/fetch
+    git branch --set-upstream-to=origin/${TILDE_BRANCH} ${TILDE_BRANCH}
     print_header "End: Initializing git repository"
   fi
   print_header "Syncing tilde..."
   git pull --rebase origin ${TILDE_BRANCH}
   git submodule update --recursive --init --quiet
+}
 
-  # Install Homebrew packages (leaving user to upgrade outdated ones
-  # manually).
+# Install Homebrew packages (notifying user how to upgrade outdated ones)
+update_packages() {
   if brew list | grep -Fq brew-cask; then
       print_header "Uninstalling old Homebrew-Cask ..."
       brew uninstall --force brew-cask
   fi
   print_header "Begin: Installing brew packages"
-  brew update
-  brew tap homebrew/bundle # for Brewfile-based installation
+  # enable Brewfile-based installation; redundant tap is faster then
+  # checking whether it has been tapped already:
+  brew tap homebrew/bundle
   brew bundle --file="${TILDE_DIRECTORY}/brew/Brewfile"
   print_header "End: Installing brew packages"
-  print_header "Outdated Homebrew packages"
+  print_header "Outdated Homebrew packages (run `brew upgrade` to upgrade):"
   brew outdated
-  print_header "Outdated mas (Mac App Store) packages"
+  print_header "Outdated Mac App Store packages (run `mas upgrade` to upgrade):"
   mas outdated
 }
 
@@ -151,11 +162,14 @@ install_rustup() {
   local pr_merged=$(curl -f "${pr_url}" 2>/dev/null | \
                       grep -e '"merged".*true' | \
                       wc -l)
-  if [[ $pr_merged ]]; then
-    curl https://sh.rustup.rs -sSf | bash
-  else
-    brew install rustup
-    echo "rustup installed via brew: please remove install_rustup() from bin/tilde and add rustup to tilde's Brewfile"
+  if ! cmd_exists rustup; then
+    if [[ $pr_merged -eq 1 ]]; then
+      brew install rustup
+      echo "rustup installed via brew: please remove install_rustup() from bin/tilde and add rustup to tilde's Brewfile"
+    else
+      curl https://sh.rustup.rs -sSf | bash
+      source $HOME/.cargo/env
+    fi
   fi
 }
 
