@@ -127,9 +127,9 @@ update_packages() {
   brew tap homebrew/bundle
   brew bundle --file="${TILDE_DIRECTORY}/brew/Brewfile"
   print_header "End: Installing brew packages"
-  print_header "Outdated Homebrew packages (run `brew upgrade` to upgrade):"
+  print_header "Outdated Homebrew packages (run \`brew upgrade\` to upgrade):"
   brew outdated
-  print_header "Outdated Mac App Store packages (run `mas upgrade` to upgrade):"
+  print_header "Outdated Mac App Store packages (run \`mas upgrade\` to upgrade):"
   mas outdated
 }
 
