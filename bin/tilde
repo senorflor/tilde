@@ -35,7 +35,7 @@ main() {
   parse_command $1
   ensure_deps_installed # incl. homebrew git, which is used below!
   update_tilde
-  update_packages
+  install_packages
   install_rustup
   link_dotfiles
   update_osx_defaults
@@ -116,7 +116,7 @@ update_tilde() {
 }
 
 # Install Homebrew packages (notifying user how to upgrade outdated ones)
-update_packages() {
+install_packages() {
   if brew list | grep -Fq brew-cask; then
       print_header "Uninstalling old Homebrew-Cask ..."
       brew uninstall --force brew-cask
