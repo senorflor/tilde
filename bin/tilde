@@ -141,6 +141,9 @@ link_dotfiles() {
   # Get rid of any existing emacs, lein, and karabiner config.
   [[ -e "${HOME}/.emacs.d" ]] && rm -rf "${HOME}/.emacs.d"
   [[ -e "${HOME}/.lein" ]] && rm -rf "${HOME}/.lein"
+  # TODO: this seemed necessary a few years ago; check again.
+  local karabiner_dir="Library/Application Support/Karabiner"
+  [[ -d "${HOME}/${karabiner_dir}" ]] && rm -f "${HOME}/${karabiner_dir}/private.xml"
 
   # Link all the config files
   link "bash/bashrc"           ".bashrc"
@@ -150,6 +153,7 @@ link_dotfiles() {
   link "emacs"                 ".emacs.d"
   link "git/gitattributes"     ".gitattributes"
   link "git/gitignore"         ".gitignore"
+  link "karabiner/private.xml" "${karabiner_dir}/private.xml"
   link "lein"                  ".lein"
   link "shell/curlrc"          ".curlrc"
   link "slate/slate"           ".slate"

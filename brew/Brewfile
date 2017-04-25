@@ -44,6 +44,7 @@ cask 'java9-beta'
 
 # OS/Environment mod apps
 cask 'dropbox'
+cask 'karabiner'
 cask 'slate'
 # A patched version of karabiner-elements is installed for Sierra
 # elsewhere, since karabiner no longer works there.
