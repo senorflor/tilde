@@ -9,13 +9,15 @@
 TILDE_TARBALL="https://github.com/senorflor/tilde/tarball/${TILDE_BRANCH}"
 TILDE_GIT_REMOTE="git@github.com:senorflor/tilde.git"
 
+source "$TILDE_DIRECTORY/bin/utils"
+
 # Help text
 read -r -d '' TILDE_HELP << EOS
 Tilde - OSX (10.9+) system, dev environment, and dotfiles configuration
 
   Repo: github.com/senorflor/tilde
 
-  Usage: $(basename "$0") [command] [options]
+  Usage: $(basename "$0") [command]
 
   Commands:
     help     print this help text
@@ -28,17 +30,18 @@ EOS
 # usual magpie accumulation of config. Inlining everything for now to
 # see what rational pieces it eventually breaks into for my own use.
 main() {
-  get_tilde # if not already present
+  get_tilde_tarball # if tilde dir not already present
   cd ${TILDE_DIRECTORY}
   parse_command $1
-  ensure_deps
-  update_repo_and_pkgs
-  install_rustup
+  ensure_deps_installed # incl. homebrew git, which is used below!
+  update_tilde
+  install_packages
   link_dotfiles
   update_osx_defaults
+  run_local_bash_config
 }
 
-get_tilde() {
+get_tilde_tarball() {
   if [[ -f ${TILDE_DIRECTORY} ]]; then
     print_failure "There is a file at \"${TILDE_DIRECTORY}\"; "
     print_failure "please move it and try again.\n"
@@ -64,28 +67,34 @@ parse_command() {
   esac
 }
 
-ensure_deps() {
-  # Ensure Homebrew is present (will also install xCode CLI where possible).
+ensure_deps_installed() {
+  # Ensure xCode or xCode command line tools are present
+  xcode-select -p &> /dev/null
+  if [[ $? -ne 0 ]]; then
+    print_header "Start: Installing xCode CLI tools"
+    xcode-select --install
+    print_header "End: Installing xCode CLI tools"
+  fi
+
+  # Ensure Homebrew is present
   if ! cmd_exists 'brew'; then
     print_header "Start: Installing Homebrew"
-    xcode-select --install
-    sudo xcodebuild --license
     /usr/bin/ruby -e "$(curl -fsSL \
         https://raw.githubusercontent.com/Homebrew/install/master/install)" || \
         exit_error
     print_header "End: Installing Homebrew"
   fi
 
-  # Ensure git is installed.
-  if ! cmd_exists 'git'; then
-    print_header "Start: Installing git"
-    brew update
+  # Ensure (modern) git is installed.
+  brew list git &> /dev/null
+  if [[ $? -ne 0 ]]; then
+    print_header "Start: Installing Homebrew-provided git"
     brew install git
-    print_header "End: Installing git"
+    print_header "End: Installing Homebrew-provided git"
   fi
 }
 
-update_repo_and_pkgs() {
+update_tilde() {
   # Initialize and update tilde repo
   if ! in_git_repo; then
     print_header "Start: Initializing git repository"
@@ -97,63 +106,131 @@ update_repo_and_pkgs() {
     git reset --hard FETCH_HEAD
     # Remove any untracked files
     git clean -fd
+    # Track upstream branch for local dev/fetch
+    git branch --set-upstream-to=origin/${TILDE_BRANCH} ${TILDE_BRANCH}
     print_header "End: Initializing git repository"
   fi
   print_header "Syncing tilde..."
   git pull --rebase origin ${TILDE_BRANCH}
   git submodule update --recursive --init --quiet
+}
 
-  # Install Homebrew packages (leaving user to upgrade outdated ones
-  # manually).
+# Install Homebrew packages (notifying user how to upgrade outdated ones)
+install_packages() {
   if brew list | grep -Fq brew-cask; then
       print_header "Uninstalling old Homebrew-Cask ..."
       brew uninstall --force brew-cask
   fi
   print_header "Begin: Installing brew packages"
-  brew update
-  brew tap homebrew/bundle # for Brewfile-based installation
+  # enable Brewfile-based installation; redundant tap is faster then
+  # checking whether it has been tapped already:
+  brew tap homebrew/bundle
   brew bundle --file="${TILDE_DIRECTORY}/brew/Brewfile"
   print_header "End: Installing brew packages"
-  print_header "Outdated Homebrew packages"
+  install_rustup
+  $TILDE_DIRECTORY/bin/version gt 10.11 && install_karabiner_elements_fork
+  print_header "Outdated Homebrew packages (run \`brew upgrade\` to upgrade):"
   brew outdated
-  print_header "Outdated mas (Mac App Store) packages"
+  print_header "Outdated Mac App Store packages (run \`mas upgrade\` to upgrade):"
   mas outdated
 }
 
 link_dotfiles() {
   # We copy this file since it later receives writes from
-  # .bash_profile.local.
+  # executing .bash_profile.local.
   cp ${TILDE_DIRECTORY}/git/gitconfig ${HOME}/.gitconfig
   
   # Get rid of any existing emacs, lein, and karabiner config.
   [[ -e "${HOME}/.emacs.d" ]] && rm -rf "${HOME}/.emacs.d"
   [[ -e "${HOME}/.lein" ]] && rm -rf "${HOME}/.lein"
+  # TODO: deleting these files seemed necessary a few years ago; check again.
+  local karabiner_dir="Library/Application Support/Karabiner"
+  local karabiner_elements_dir=".config/karabiner"
+  mkdir -p "${HOME}/${karabiner_dir}" && rm -f "${HOME}/${karabiner_dir}/private.xml"
+  mkdir -p "${HOME}/${karabiner_elements_dir}" && rm -f "${HOME}/${karabiner_elements_dir}/karabiner.json"
 
   # Link all the config files
-  link "bash/bashrc"           ".bashrc"
-  link "bash/bash_profile"     ".bash_profile"
-  link "bash/inputrc"          ".inputrc"
-  link "brew/Brewfile"         ".Brewfile"
-  link "emacs"                 ".emacs.d"
-  link "git/gitattributes"     ".gitattributes"
-  link "git/gitignore"         ".gitignore"
-  link "lein"                  ".lein"
-  link "shell/curlrc"          ".curlrc"
-  link "slate/slate"           ".slate"
-  link "tmux/tmux.conf"        ".tmux.conf"
-  # iTerm won't pick up a dot-prefixed file for whatever reason
-  link "iterm/solarized.dark.itermcolors.txt" "solarized.dark.itermcolors.txt"
+  link "bash/bashrc"              ".bashrc"
+  link "bash/bash_profile"        ".bash_profile"
+  link "bash/inputrc"             ".inputrc"
+  link "brew/Brewfile"            ".Brewfile"
+  link "emacs"                    ".emacs.d"
+  link "git/gitattributes"        ".gitattributes"
+  link "git/gitignore"            ".gitignore"
+  link "karabiner/private.xml"    "${karabiner_dir}/private.xml"
+  link "karabiner/karabiner.json" "${karabiner_elements_dir}/karabiner.json"
+  link "lein"                     ".lein"
+  link "shell/curlrc"             ".curlrc"
+  link "slate/slate"              ".slate"
+  link "tmux/tmux.conf"           ".tmux.conf"
 }
 
 install_rustup() {
-  pr_merged=$(curl -f https://api.github.com/repos/Homebrew/homebrew-core/pulls/9617 2>/dev/null | grep -e '"merged".*true' | wc -l)
-  [[ $pr_merged ]] && brew install rustup && \
-      echo "rustup installed via brew: please remove install_rustup() from ~/.tilde/bin/tilde and add rustup to tilde's Brewfile" || \
-          curl https://sh.rustup.rs -sSf | bash
+  if ! cmd_exists rustup; then
+    local pr_url="https://api.github.com/repos/Homebrew/homebrew-core/pulls/9617"
+    local pr_merged=$(curl -f "${pr_url}" 2>/dev/null | \
+                      grep -e '"merged".*true' | \
+                      wc -l)
+    if [[ $pr_merged -eq 1 ]]; then
+      brew install rustup
+      echo "rustup installed via brew: please remove install_rustup() from"
+      echo "${TILDE_DIRECTORY}/bin/tilde and add rustup to tilde's Brewfile"
+    else
+      curl https://sh.rustup.rs -sSf | bash
+      source $HOME/.cargo/env
+    fi
+  fi
+}
+
+install_karabiner_elements_fork() {
+  # Change these two vars to upgrade which fork .dmg is installed. Run
+  # `shasum` on a manually downloaded copy of the .dmg when testing
+  # the new version and replace sha too.
+  local k_version="0.90.92"
+  local k_sha="888714dde13c400176782af6bcd81a1fcf6f3e3d"
+
+  # If Karabiner-Elements not already present, or if a different
+  # version, get and install desired version.
+  local k_info_file="/Applications/Karabiner-Elements.app/Contents/Info"
+  if [[ ! -f "${k_info_file}.plist" || \
+          "$k_version" != "$(defaults read "$k_info_file" CFBundleShortVersionString)" ]]; then
+    local k_dmg="Karabiner-Elements-${k_version}.dmg"
+    local k_dmg_url="https://github.com/wwwjfy/Karabiner-Elements/releases/download/${k_version}/${k_dmg}"
+    local k_dmg_path="/var/tmp/$(LC_CTYPE=C tr -dc a-zA-Z0-9 < /dev/urandom | fold -w 32 | head -n 1)"
+    local k_dmg_file="${k_dmg_path}/${k_dmg}"
+
+    # Get the dmg
+    (mkdir -p "$k_dmg_path"; cd "$k_dmg_path"; curl -sLO "$k_dmg_url")
+    if [[ "$k_sha" != $(shasum "$k_dmg_file" | awk '{print $1}') ]]; then
+      print_failure Karabiner-Elements download SHA does not match; exiting.
+      exit_error
+    fi
+
+    # Mount it and run the installer
+    local k_device k_mount
+    read k_device k_mount <<<$(hdiutil mount "$k_dmg_file" | grep 'Karabiner-Elements' | awk '{print $1 " " $3}')
+    local k_pkg=$(ls "$k_mount" | grep '.pkg')
+    sudo /usr/sbin/installer -pkg "${k_mount}/${k_pkg}" -target / 1> /dev/null || \
+        print_failure Karabiner-Elements installation failed.
+
+    # Clean up
+    hdiutil detach "$k_device"
+    rm -rf "$k_dmg_path"
+  fi
 }
 
 update_osx_defaults() {
   bash ./bin/osxdefaults
+}
+
+run_local_bash_config() {
+  # We ensure local config is sourced, especially since we copy
+  # .gitconfig destructively and local config can thereby be
+  # removed. (It's therefore implied that we should always persist
+  # `git config` calls in .bash_profile.local, not just modify
+  # .gitconfig via the prompt.
+  local local_config="${HOME}/.bash_profile.local"
+  [[ -f "$local_config" ]] && source "$local_config"
 }
 
 ### Utils #####################################################################
@@ -166,62 +243,6 @@ exit_error() {
 }
 trap "echo 'Error: exiting Tilde' && exit 1" USR1
 
-# Some utils to let us print with style
-bold="$(tput bold)"
-green="$(tput setaf 2)"
-red="$(tput setaf 1)"
-underline="$(tput smul)"
-revert_style="$(tput sgr0)";
-
-print_header() {
-  printf "\n${underline}==== $@ ====${revert_style}\n"
-}
-
-print_warn() {
-  printf "${bold}$@${revert_style}"
-}
-
-print_info() {
-  printf "  info: $@"
-}
-
-print_debug() {
-  [[ "$TILDE_DEBUG" == true ]]  && printf "    debug: $@"
-}
-
-print_success() {
-  printf "${green}✓ $@${revert_style}"
-}
-
-print_failure() {
-  printf "${red}x $@${revert_style}"
-}
-
-print_help() {
-  printf "$TILDE_HELP"
-}
-
-seek_confirmation() {
-  print_warn "$@"
-  read -p "Continue? (y/n) " -n 1
-  printf "\n"
-}
-
-is_confirmed() {
-  [[ "$REPLY" =~ ^[Yy]$ ]] && return 0 || return 1
-}
-
-in_git_repo() {
-  $(git rev-parse --is-inside-work-tree &> /dev/null)
-}
-
-cmd_exists() {
-  [[ $(type -P $1) ]] && return 0 || return 1
-}
-
-link() {
-    ln -fs "${TILDE_DIRECTORY}/${1}" "${HOME}/${2}"
-}
 
 ### Go go go! #################################################################
 main $1
