@@ -176,6 +176,43 @@ install_rustup() {
   fi
 }
 
+install_karabiner_elements_fork() {
+  # Change these two vars to upgrade which fork .dmg is installed. Run
+  # `shasum` on a manually downloaded copy of the .dmg when testing
+  # the new version and replace sha too.
+  local k_version="0.90.92"
+  local k_sha="888714dde13c400176782af6bcd81a1fcf6f3e3d"
+
+  # If Karabiner-Elements not already present, or if a different
+  # version, get and install desired version.
+  local k_info_file="/Applications/Karabiner-Elements.app/Contents/Info"
+  if [[ ! -f "${k_info_file}.plist" || \
+          "$k_version" != "$(defaults read "$k_info_file" CFBundleShortVersionString)" ]]; then
+    local k_dmg="Karabiner-Elements-${k_version}.dmg"
+    local k_dmg_url="https://github.com/wwwjfy/Karabiner-Elements/releases/download/${k_version}/${k_dmg}"
+    local k_dmg_path="/var/tmp/$(LC_CTYPE=C tr -dc a-zA-Z0-9 < /dev/urandom | fold -w 32 | head -n 1)"
+    local k_dmg_file="${k_dmg_path}/${k_dmg}"
+
+    # Get the dmg
+    (mkdir -p "$k_dmg_path"; cd "$k_dmg_path"; curl -sLO "$k_dmg_url")
+    if [[ "$k_sha" != $(shasum "$k_dmg_file" | awk '{print $1}') ]]; then
+      print_failure Karabiner-Elements download SHA does not match; exiting.
+      exit_error
+    fi
+
+    # Mount it and run the installer
+    local k_device k_mount
+    read k_device k_mount <<<$(hdiutil mount "$k_dmg_file" | grep 'Karabiner-Elements' | awk '{print $1 " " $3}')
+    local k_pkg=$(ls "$k_mount" | grep '.pkg')
+    sudo /usr/sbin/installer -pkg "${k_mount}/${k_pkg}" -target / 1> /dev/null || \
+        print_failure Karabiner-Elements installation failed.
+
+    # Clean up
+    hdiutil detach "$k_device"
+    rm -rf "$k_dmg_path"
+  fi
+}
+
 update_osx_defaults() {
   bash ./bin/osxdefaults
 }
