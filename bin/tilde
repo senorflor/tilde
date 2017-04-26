@@ -28,8 +28,8 @@ EOS
 # usual magpie accumulation of config. Inlining everything for now to
 # see what rational pieces it eventually breaks into for my own use.
 main() {
-  get_tilde_tarball && source "$TILDE_DIRECTORY/bin/utils"
-  cd ${TILDE_DIRECTORY}
+  get_tilde_tarball && source "${TILDE_DIRECTORY}/bin/utils"
+  cd "$TILDE_DIRECTORY"
 
   parse_command $1
   ensure_deps_installed
@@ -41,20 +41,20 @@ main() {
 }
 
 get_tilde_tarball() {
-  if [[ -f ${TILDE_DIRECTORY} ]]; then
+  if [[ -f "$TILDE_DIRECTORY" ]]; then
     echo "There is a file at \"${TILDE_DIRECTORY}\"; "
     echo "please move it and try again."
     exit_error
   fi
 
-  if [[ ! -d ${TILDE_DIRECTORY} ]]; then
+  if [[ ! -d "$TILDE_DIRECTORY" ]]; then
     echo "Downloading tilde..."
 
     # Get and extract the tarball
-    mkdir ${TILDE_DIRECTORY}
-    curl -fsSLo ${HOME}/tilde.tar.gz ${TILDE_TARBALL}
-    tar -zxf ${HOME}/tilde.tar.gz --strip-components 1 -C ${TILDE_DIRECTORY}
-    rm -rf ${HOME}/tilde.tar.gz
+    mkdir "$TILDE_DIRECTORY"
+    curl -fsSLo "${HOME}/tilde.tar.gz" "$TILDE_TARBALL"
+    tar -zxf "${HOME}/tilde.tar.gz" --strip-components 1 -C "$TILDE_DIRECTORY"
+    rm -rf "${HOME}/tilde.tar.gz"
   fi    
 }
 
@@ -62,7 +62,7 @@ parse_command() {
   case $1 in
     "help") print_help && exit ;;
     install) ;;
-    [^-]*) print_warn "Invalid command: $1.\n" && exit_error ;;
+    [^-]*) print_warn "Invalid command: ${1}.\n" && exit_error ;;
   esac
 }
 
@@ -106,19 +106,19 @@ update_tilde() {
   if ! in_git_repo; then
     print_header "Start: Initializing git repository"
     git init
-    git remote add origin ${TILDE_GIT_REMOTE}
-    git fetch origin ${TILDE_BRANCH}
+    git remote add origin "$TILDE_GIT_REMOTE"
+    git fetch origin "$TILDE_BRANCH"
     # Reset the index and working tree to the fetched HEAD
     # (submodules are cloned in the subsequent sync step)
     git reset --hard FETCH_HEAD
     # Remove any untracked files
     git clean -fd
     # Track upstream branch for local dev/fetch
-    git branch --set-upstream-to=origin/${TILDE_BRANCH} ${TILDE_BRANCH}
+    git branch --set-upstream-to="origin/${TILDE_BRANCH}" "$TILDE_BRANCH"
     print_header "End: Initializing git repository"
   fi
   print_header "Syncing tilde..."
-  git pull --rebase origin ${TILDE_BRANCH}
+  git pull --rebase origin "$TILDE_BRANCH"
   git submodule update --recursive --init --quiet
 }
 
@@ -145,7 +145,7 @@ install_packages() {
 link_dotfiles() {
   # We copy this file since it later receives writes from
   # executing .bash_profile.local.
-  cp ${TILDE_DIRECTORY}/git/gitconfig ${HOME}/.gitconfig
+  cp "${TILDE_DIRECTORY}/git/gitconfig" "${HOME}/.gitconfig"
   
   # Get rid of any existing emacs, lein, and karabiner config.
   [[ -e "${HOME}/.emacs.d" ]] && rm -rf "${HOME}/.emacs.d"
@@ -175,7 +175,7 @@ link_dotfiles() {
 install_rustup() {
   if ! cmd_exists rustup; then
     local pr_url="https://api.github.com/repos/Homebrew/homebrew-core/pulls/9617"
-    local pr_merged=$(curl -f "${pr_url}" 2>/dev/null | \
+    local pr_merged=$(curl -f "$pr_url" 2>/dev/null | \
                       grep -e '"merged".*true' | \
                       wc -l)
     if [[ $pr_merged -eq 1 ]]; then
@@ -184,7 +184,7 @@ install_rustup() {
       echo "${TILDE_DIRECTORY}/bin/tilde and add rustup to tilde's Brewfile"
     else
       curl https://sh.rustup.rs -sSf | bash
-      source $HOME/.cargo/env
+      source "${HOME}/.cargo/env"
     fi
   fi
 }
