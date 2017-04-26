@@ -137,29 +137,32 @@ install_packages() {
 
 link_dotfiles() {
   # We copy this file since it later receives writes from
-  # .bash_profile.local.
+  # executing .bash_profile.local.
   cp ${TILDE_DIRECTORY}/git/gitconfig ${HOME}/.gitconfig
   
   # Get rid of any existing emacs, lein, and karabiner config.
   [[ -e "${HOME}/.emacs.d" ]] && rm -rf "${HOME}/.emacs.d"
   [[ -e "${HOME}/.lein" ]] && rm -rf "${HOME}/.lein"
-  # TODO: this seemed necessary a few years ago; check again.
+  # TODO: deleting these files seemed necessary a few years ago; check again.
   local karabiner_dir="Library/Application Support/Karabiner"
-  [[ -d "${HOME}/${karabiner_dir}" ]] && rm -f "${HOME}/${karabiner_dir}/private.xml"
+  local karabiner_elements_dir=".config/karabiner"
+  mkdir -p "${HOME}/${karabiner_dir}" && rm -f "${HOME}/${karabiner_dir}/private.xml"
+  mkdir -p "${HOME}/${karabiner_elements_dir}" && rm -f "${HOME}/${karabiner_elements_dir}/karabiner.json"
 
   # Link all the config files
-  link "bash/bashrc"           ".bashrc"
-  link "bash/bash_profile"     ".bash_profile"
-  link "bash/inputrc"          ".inputrc"
-  link "brew/Brewfile"         ".Brewfile"
-  link "emacs"                 ".emacs.d"
-  link "git/gitattributes"     ".gitattributes"
-  link "git/gitignore"         ".gitignore"
-  link "karabiner/private.xml" "${karabiner_dir}/private.xml"
-  link "lein"                  ".lein"
-  link "shell/curlrc"          ".curlrc"
-  link "slate/slate"           ".slate"
-  link "tmux/tmux.conf"        ".tmux.conf"
+  link "bash/bashrc"              ".bashrc"
+  link "bash/bash_profile"        ".bash_profile"
+  link "bash/inputrc"             ".inputrc"
+  link "brew/Brewfile"            ".Brewfile"
+  link "emacs"                    ".emacs.d"
+  link "git/gitattributes"        ".gitattributes"
+  link "git/gitignore"            ".gitignore"
+  link "karabiner/private.xml"    "${karabiner_dir}/private.xml"
+  link "karabiner/karabiner.json" "${karabiner_elements_dir}/karabiner.json"
+  link "lein"                     ".lein"
+  link "shell/curlrc"             ".curlrc"
+  link "slate/slate"              ".slate"
+  link "tmux/tmux.conf"           ".tmux.conf"
 }
 
 install_rustup() {
