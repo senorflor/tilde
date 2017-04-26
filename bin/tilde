@@ -38,6 +38,7 @@ main() {
   install_packages
   link_dotfiles
   update_osx_defaults
+  run_local_bash_config
 }
 
 get_tilde_tarball() {
@@ -217,6 +218,16 @@ install_karabiner_elements_fork() {
 
 update_osx_defaults() {
   bash ./bin/osxdefaults
+}
+
+run_local_bash_config() {
+  # We ensure local config is sourced, especially since we copy
+  # .gitconfig destructively and local config can thereby be
+  # removed. (It's therefore implied that we should always persist
+  # `git config` calls in .bash_profile.local, not just modify
+  # .gitconfig via the prompt.
+  local local_config="${HOME}/.bash_profile.local"
+  [[ -f "$local_config" ]] && source "$local_config"
 }
 
 ### Utils #####################################################################
