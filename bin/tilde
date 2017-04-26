@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-SCRIPT_LOCATION="${BASH_SOURCE%/*}"
-source "$SCRIPT_LOCATION/utils"
 
 # Overrideable variables: where to install, and which repo branch to
 # use. TODO: these should probably just be flag opts for
@@ -10,6 +8,8 @@ source "$SCRIPT_LOCATION/utils"
 # Other tilde-specific vars, which should be changed if you fork the repo.
 TILDE_TARBALL="https://github.com/senorflor/tilde/tarball/${TILDE_BRANCH}"
 TILDE_GIT_REMOTE="git@github.com:senorflor/tilde.git"
+
+source "$TILDE_DIRECTORY/bin/utils"
 
 # Help text
 read -r -d '' TILDE_HELP << EOS
