@@ -28,11 +28,11 @@ EOS
 # usual magpie accumulation of config. Inlining everything for now to
 # see what rational pieces it eventually breaks into for my own use.
 main() {
-  get_tilde_tarball # if tilde dir not already present
-  source "$TILDE_DIRECTORY/bin/utils"
+  get_tilde_tarball && source "$TILDE_DIRECTORY/bin/utils"
   cd ${TILDE_DIRECTORY}
+
   parse_command $1
-  ensure_deps_installed # incl. homebrew git, which is used below!
+  ensure_deps_installed
   update_tilde
   install_packages
   link_dotfiles
@@ -90,6 +90,14 @@ ensure_deps_installed() {
     print_header "Start: Installing Homebrew-provided git"
     brew install git
     print_header "End: Installing Homebrew-provided git"
+  fi
+
+  # Ensure we can ssh to github.com
+  ssh -T git@github.com 2>&1 | grep 'successfully' &> /dev/null
+  if [[ $? -ne 0 ]]; then
+    print_failure "Could not ssh to github: ensure that you are connected to the internet and that"
+    print_failure "an ssh key is installed: https://help.github.com/articles/testing-your-ssh-connection/"
+    exit_error
   fi
 }
 
