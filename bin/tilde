@@ -9,8 +9,6 @@
 TILDE_TARBALL="https://github.com/senorflor/tilde/tarball/${TILDE_BRANCH}"
 TILDE_GIT_REMOTE="git@github.com:senorflor/tilde.git"
 
-source "$TILDE_DIRECTORY/bin/utils"
-
 # Help text
 read -r -d '' TILDE_HELP << EOS
 Tilde - OSX (10.9+) system, dev environment, and dotfiles configuration
@@ -31,6 +29,7 @@ EOS
 # see what rational pieces it eventually breaks into for my own use.
 main() {
   get_tilde_tarball # if tilde dir not already present
+  source "$TILDE_DIRECTORY/bin/utils"
   cd ${TILDE_DIRECTORY}
   parse_command $1
   ensure_deps_installed # incl. homebrew git, which is used below!
@@ -43,17 +42,17 @@ main() {
 
 get_tilde_tarball() {
   if [[ -f ${TILDE_DIRECTORY} ]]; then
-    print_failure "There is a file at \"${TILDE_DIRECTORY}\"; "
-    print_failure "please move it and try again.\n"
+    echo "There is a file at \"${TILDE_DIRECTORY}\"; "
+    echo "please move it and try again."
     exit_error
   fi
 
   if [[ ! -d ${TILDE_DIRECTORY} ]]; then
-    print_header "Downloading tilde...\n"
+    echo "Downloading tilde..."
 
     # Get and extract the tarball
     mkdir ${TILDE_DIRECTORY}
-    curl -fsSLo ${HOME}/tilde.tar.gz ${TILDE_TARBALL_PATH}
+    curl -fsSLo ${HOME}/tilde.tar.gz ${TILDE_TARBALL}
     tar -zxf ${HOME}/tilde.tar.gz --strip-components 1 -C ${TILDE_DIRECTORY}
     rm -rf ${HOME}/tilde.tar.gz
   fi    
