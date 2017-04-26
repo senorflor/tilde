@@ -2,6 +2,7 @@ vim/.netrwhist
 vim/.viminfo
 emacs/ac-comphist.dat
 emacs/elpa
-emacs/projectile-bookmarks.eld
 emacs/eshell
+emacs/network-security.data
+emacs/projectile-bookmarks.eld
 lein/repl-history
