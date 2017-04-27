@@ -3,10 +3,11 @@ SCRIPT_LOCATION="${BASH_SOURCE%/*}"
 source "$SCRIPT_LOCATION/utils"
 
 # Help text
+SCRIPT_NAME=$(basename "$0")
 read -r -d '' VERSION_HELP << EOS
 version - make assertions about OS X versions
 
-  Usage: $(basename "$0") COMMAND VERSION
+  Usage: ${SCRIPT_NAME} COMMAND VERSION
 
   Commands:
     lt     check if OSX version is less than VERSION (e.g. 10.12.4)
@@ -17,27 +18,25 @@ version - make assertions about OS X versions
   lt/eq/gt the version string provided up until its level of
   specificity, e.g. if run on OSX version 10.12.4:
 
-  $(basename "$0") lt 11.12     # succeeds at major level (10 less than 11).
-  $(basename "$0") lt 10.13     # succeeds at minor level (12 less than 13)
-  $(basename "$0") lt 10        # fails at major level (10 not less than 10).
-  $(basename "$0") lt 10.12.4   # fails at patch level (4 not less than 4)
-  $(basename "$0") eq 10        # succeeds at major level (10 equals 10)
-  $(basename "$0") eq 10.12     # succeeds at minor level (12 equals 12)
-  $(basename "$0") eq 10.12.2   # fails at patch level (4 not equal to 2)
-  $(basename "$0") gt 11.11.3   # fails at major level (10 not greater than 11)
-  $(basename "$0") gt 10.12.3   # succeeds at patch level (4 greater than 3)
-  $(basename "$0") gt 10        # fails at major level (10 not greater than 10)
-
+  ${SCRIPT_NAME} lt 11.12     # succeeds at major level (10 less than 11).
+  ${SCRIPT_NAME} lt 10.13     # succeeds at minor level (12 less than 13)
+  ${SCRIPT_NAME} lt 10        # fails at major level (10 not less than 10).
+  ${SCRIPT_NAME} lt 10.12.4   # fails at patch level (4 not less than 4)
+  ${SCRIPT_NAME} eq 10        # succeeds at major level (10 equals 10)
+  ${SCRIPT_NAME} eq 10.12     # succeeds at minor level (12 equals 12)
+  ${SCRIPT_NAME} eq 10.12.2   # fails at patch level (4 not equal to 2)
+  ${SCRIPT_NAME} gt 11.11.3   # fails at major level (10 not greater than 11)
+  ${SCRIPT_NAME} gt 10.12.3   # succeeds at patch level (4 greater than 3)
+  ${SCRIPT_NAME} gt 10        # fails at major level (10 not greater than 10)
 EOS
 
-
 print_help() {
-  printf "$VERSION_HELP"
+  echo "$VERSION_HELP"
 }
 
-parse_command() {
+validate_command() {
   case $1 in
-    "help") print_help && exit ;;
+    "help"|"--help"|"-h") print_help && exit ;;
     "lt"|"eq"|"gt") ;;
     [^-]*) print_warn "Invalid command: $1\n" && exit 1 ;;
   esac
@@ -54,16 +53,17 @@ validate_version_string() {
 }
 
 compare() {
-  parse_command $1 # The sanity of the below `eval` statement depends
-                   # on a closed class of commands.
-
-  validate_version_string $2
+  # The sanity of the below `eval` statement depends on a closed class
+  # of commands and version strings, so we check both.
+  validate_command "$1"
+  validate_version_string "$2"
 
   # Get the version numbers' major, minor, and patch version segments.
-  local a b c osx_version="$(sw_vers -productVersion)"
-  IFS=. read a b c <<<"$osx_version"
-  local x y z desired_version=$2 
-  IFS=. read x y z <<<"$desired_version"
+  local a b c osx_version x y z desired_version
+  osx_version="$(sw_vers -productVersion)"
+  desired_version="$2"
+  IFS=. read -r a b c <<<"$osx_version"
+  IFS=. read -r x y z <<<"$desired_version"
 
   # Bless me $PPID, for I have sinned
   local compares
@@ -82,7 +82,7 @@ compare() {
       ($b -eq \"$y\" && -n \"$z\" && $c -$1 \"$z\") \
       ]] && echo 0 || echo 1")
   fi
-  exit $compares
+  exit "$compares"
 }
 
-compare $@
+compare "$@"

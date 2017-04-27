@@ -3,8 +3,8 @@
 # Overrideable variables: where to install, and which repo branch to
 # use. TODO: these should probably just be flag opts for
 # simplicity/consistency.
-: ${TILDE_DIRECTORY:="${HOME}/.tilde"}
-: ${TILDE_BRANCH:="master"}
+TILDE_DIRECTORY="${TILDE_DIRECTORY:-${HOME}/.tilde}"
+TILDE_BRANCH="${TILDE_BRANCH:-master}"
 # Other tilde-specific vars, which should be changed if you fork the repo.
 TILDE_TARBALL="https://github.com/senorflor/tilde/tarball/${TILDE_BRANCH}"
 TILDE_GIT_REMOTE="git@github.com:senorflor/tilde.git"
@@ -31,7 +31,7 @@ main() {
   get_tilde_tarball && source "${TILDE_DIRECTORY}/bin/utils"
   cd "$TILDE_DIRECTORY"
 
-  parse_command $1
+  parse_command "$1"
   ensure_deps_installed
   update_tilde
   install_packages
@@ -51,7 +51,7 @@ get_tilde_tarball() {
     echo "Downloading tilde..."
 
     # Get and extract the tarball
-    mkdir "$TILDE_DIRECTORY"
+    mkdir -p "$TILDE_DIRECTORY"
     curl -fsSLo "${HOME}/tilde.tar.gz" "$TILDE_TARBALL"
     tar -zxf "${HOME}/tilde.tar.gz" --strip-components 1 -C "$TILDE_DIRECTORY"
     rm -rf "${HOME}/tilde.tar.gz"
@@ -135,7 +135,7 @@ install_packages() {
   brew bundle --file="${TILDE_DIRECTORY}/brew/Brewfile"
   print_header "End: Installing brew packages"
   install_rustup
-  $TILDE_DIRECTORY/bin/version gt 10.11 && install_karabiner_elements_fork
+  "$TILDE_DIRECTORY/bin/version" gt 10.11 && install_karabiner_elements_fork
   print_header "Outdated Homebrew packages (run \`brew upgrade\` to upgrade):"
   brew outdated
   print_header "Outdated Mac App Store packages (run \`mas upgrade\` to upgrade):"
@@ -174,10 +174,8 @@ link_dotfiles() {
 
 install_rustup() {
   if ! cmd_exists rustup; then
-    local pr_url="https://api.github.com/repos/Homebrew/homebrew-core/pulls/9617"
-    local pr_merged=$(curl -f "$pr_url" 2>/dev/null | \
-                      grep -e '"merged".*true' | \
-                      wc -l)
+    local pr_merged pr_url="https://api.github.com/repos/Homebrew/homebrew-core/pulls/9617"
+    pr_merged=$(curl -f "$pr_url" 2>/dev/null | grep -ce '"merged".*true')
     if [[ $pr_merged -eq 1 ]]; then
       brew install rustup
       echo "rustup installed via brew: please remove install_rustup() from"
@@ -201,10 +199,11 @@ install_karabiner_elements_fork() {
   local k_info_file="/Applications/Karabiner-Elements.app/Contents/Info"
   if [[ ! -f "${k_info_file}.plist" || \
           "$k_version" != "$(defaults read "$k_info_file" CFBundleShortVersionString)" ]]; then
-    local k_dmg="Karabiner-Elements-${k_version}.dmg"
-    local k_dmg_url="https://github.com/wwwjfy/Karabiner-Elements/releases/download/${k_version}/${k_dmg}"
-    local k_dmg_path="/var/tmp/$(LC_CTYPE=C tr -dc a-zA-Z0-9 < /dev/urandom | fold -w 32 | head -n 1)"
-    local k_dmg_file="${k_dmg_path}/${k_dmg}"
+    local k_dmg k_dmg_url k_dmg_path k_dmg_file
+    k_dmg="Karabiner-Elements-${k_version}.dmg"
+    k_dmg_url="https://github.com/wwwjfy/Karabiner-Elements/releases/download/${k_version}/${k_dmg}"
+    k_dmg_path="/var/tmp/$(LC_CTYPE=C tr -dc a-zA-Z0-9 < /dev/urandom | fold -w 32 | head -n 1)"
+    k_dmg_file="${k_dmg_path}/${k_dmg}"
 
     # Get the dmg
     (mkdir -p "$k_dmg_path"; cd "$k_dmg_path"; curl -sLO "$k_dmg_url")
@@ -214,9 +213,11 @@ install_karabiner_elements_fork() {
     fi
 
     # Mount it and run the installer
-    local k_device k_mount
-    read k_device k_mount <<<$(hdiutil mount "$k_dmg_file" | grep 'Karabiner-Elements' | awk '{print $1 " " $3}')
-    local k_pkg=$(ls "$k_mount" | grep '.pkg')
+    local k_device k_mount k_pkg
+    read -r k_device k_mount <<<"$(hdiutil mount "$k_dmg_file" | \
+                                     grep 'Karabiner-Elements' | \
+                                     awk '{print $1 " " $3}')"
+    k_pkg=$(ls "$k_mount" | grep '.pkg')
     sudo /usr/sbin/installer -pkg "${k_mount}/${k_pkg}" -target / 1> /dev/null || \
         print_failure Karabiner-Elements installation failed.
 
