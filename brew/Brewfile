@@ -6,6 +6,7 @@ brew 'bash-completion'
 brew 'coreutils'
 brew 'jq'
 brew 'tree'
+brew 'watchman'
 brew 'wget'
 
 # Cloud CLIs
@@ -23,6 +24,7 @@ brew 'postgres'
 
 # JS
 brew 'node' # lots of internet noise around this; evaluate.
+brew 'nodenv'
 brew 'npm'
 brew 'yarn'
 
@@ -32,9 +34,6 @@ brew 'rbenv'
 # Python
 brew 'pyenv'
 brew 'pyenv-virtualenv'
-
-# Javascript
-brew 'nodenv'
 
 # Java
 brew 'jenv'
