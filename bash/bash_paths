@@ -9,6 +9,7 @@ GOPATH="$HOME/go"
 declare -a dirs_to_prepend=(
     "/usr/local/bin" # Ensure that this bin always takes precedence over `/usr/bin`
     "/usr/local/ghc/bin"
+    "$(yarn global bin)"
 )
 
 # Directories to be appended to PATH
@@ -39,7 +40,7 @@ done
 # Append directories to PATH
 for index in ${!dirs_to_append[*]}
 do
-    if [ -d ${dirs_to_append[$index]} ]; then
+    if [ -d "${dirs_to_append[$index]}" ]; then
         # If these bins exist, then append them to existing PATH
         PATH="$PATH:${dirs_to_append[$index]}"
     fi
