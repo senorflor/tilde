@@ -6,3 +6,4 @@ emacs/eshell
 emacs/network-security.data
 emacs/projectile-bookmarks.eld
 lein/repl-history
+lein/indices/*
