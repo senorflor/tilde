@@ -4,6 +4,7 @@ brew 'mas' # for Mac App Store stuff
 # Bash and general CLI tools
 brew 'bash-completion'
 brew 'coreutils'
+brew 'htop'
 brew 'jq'
 brew 'tmux'
 brew 'tree'
