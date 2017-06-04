@@ -26,8 +26,8 @@
                       yaml-mode
 
                    ;; Java
-                     ;; malabar-mode
-                     groovy-mode
+                      ;; malabar-mode
+                      groovy-mode
 
                    ;; Clojure
                       ac-cider
