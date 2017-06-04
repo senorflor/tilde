@@ -12,8 +12,13 @@
 (defvar my-packages '(
                    ;; General
                       dash
+                      ido-ubiquitous
+                      magit
                       org
+                      projectile
                       rainbow-delimiters
+                      smex
+                      tagedit ;; sexp-style html editing
                       undo-tree
 
                    ;; Formats
@@ -28,6 +33,7 @@
                       ac-cider
                       cider
                       clojure-mode
+                      clojure-mode-extra-font-locking
                       clojurescript-mode
                       paredit
 
@@ -41,40 +47,67 @@
                       web-mode
 
                    ;; Elm
-                      elm-mode
-
-                   ;; Project nav
-                      projectile)
+                      elm-mode)
   "Packages required at launchtime")
 
 (dolist (p my-packages)
   (when (not (package-installed-p p))
     (package-install p)))
 
-;; global setup
+;;; Global setup ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Unset these modes if they exist
 (dolist (mode '(menu-bar-mode tool-bar-mode scroll-bar-mode))
   (when (fboundp mode) (funcall mode -1)))
+
+;; Ensure quiet startup
 (setq inhibit-startup-screen t
       initial-scratch-message nil
       initial-major-mode 'org-mode)
+
+;; Make window title more useful when windowed
 (when window-system
   (setq frame-title-format '(buffer-file-name "%f" ("%b"))))
+
+;; Don't litter filesystem with backups
 (setq make-backup-files nil)
 (setq backup-directory-alist `((".*" . ,temporary-file-directory)))
 (setq auto-save-file-name-transforms `((".*" ,temporary-file-directory t)))
+
+;; Save last visited point in files
+(if (> emacs-major-version 24) (save-place-mode 1))
+(require 'saveplace)
+(setq-default save-place t)
+(setq save-place-file (concat user-emacs-directory "places"))
+
+;; Allow us to yes or no ?s with a single letter
 (defalias 'yes-or-no-p 'y-or-n-p)
+
+;; Improve echo area interactions
 (setq echo-keystrokes 0.1
       use-dialog-box nil
       visible-bell t)
+
+;; Allow us to type over selected region
 (delete-selection-mode t)
+
+;; Allow us to downcase region without warning
 (put 'downcase-region 'disabled nil)
+
+;; Tab-width 2 spaces by default
 (setq-default tab-width 2
 	      standard-indent 2
 	      indent-tabs-mode nil)
+
+;; Move around windows spatially
 (global-set-key (kbd "C-x C-<up>") 'windmove-up)
 (global-set-key (kbd "C-x C-<down>") 'windmove-down)
 (global-set-key (kbd "C-x C-<left>") 'windmove-left)
 (global-set-key (kbd "C-x C-<right>") 'windmove-right)
+
+;; Use more interactive/freq-based M-x command completion
+(smex-initialize)
+(global-set-key (kbd "M-x") 'smex)
+(global-set-key (kbd "M-X") 'smex-major-mode-commands)
 
 ;; OS X copy to clipboard on C-w
 (defun copy-from-osx ()
@@ -120,13 +153,25 @@
 (setq auto-mode-alist (cons '("\\.cljs$" . clojure-mode) auto-mode-alist))
 ;;; cider config
 (require 'ac-cider)
-(add-hook 'cider-mode-hook #'eldoc-mode)
+(defun set-auto-complete-as-completion-at-point-function ()
+  (setq completion-at-point-functions '(auto-complete)))
+(add-hook 'cider-mode-hook 'ac-flyspell-workaround)
+(add-hook 'cider-mode-hook 'ac-cider-setup)
+(add-hook 'cider-mode-hook 'set-auto-complete-as-completion-at-point-function)
+(add-hook 'cider-repl-mode-hook 'ac-cider-setup)
 (add-hook 'cider-repl-mode-hook 'subword-mode)
 (add-hook 'cider-repl-mode-hook 'paredit-mode)
 (add-hook 'cider-repl-mode-hook 'rainbow-delimiters-mode)
-(setq nrepl-hide-special-buffers t)
-(setq nrepl-log-messages t)
-(setq cider-show-error-buffer 'only-in-repl)
+(add-hook 'auto-complete-mode-hook
+          'set-auto-complete-as-completion-at-point-function)
+(eval-after-load "auto-complete"
+  '(progn
+     (add-to-list 'ac-modes 'cider-mode)
+     (add-to-list 'ac-modes 'cider-repl-mode)))
+
+
+
+
 
 ;;; Al Gore
 (defun its-a-web-mode-hook ()

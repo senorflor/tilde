@@ -4,6 +4,8 @@ emacs/ac-comphist.dat
 emacs/elpa
 emacs/eshell
 emacs/network-security.data
+emacs/places
 emacs/projectile-bookmarks.eld
+emacs/smex-items
 lein/repl-history
 lein/indices/*
