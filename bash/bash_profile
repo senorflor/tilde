@@ -12,6 +12,7 @@ declare -a files=(
     $HOME/.bash_profile.local # Local and private settings not under version control (e.g. git credentials)
     $HOME/.tilde/bash/bash_paths # Path modifications (must source after `.bash_profile.local` in case of custom `brew` location)
     /usr/local/bin/virtualenvwrapper.sh # Python virtualenvwrapper
+    /usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.bash.inc
 )
 
 # If these files are readable, source them
