@@ -150,11 +150,14 @@ link_dotfiles() {
   # Get rid of any existing emacs, lein, and karabiner config.
   [[ -e "${HOME}/.emacs.d" ]] && rm -rf "${HOME}/.emacs.d"
   [[ -e "${HOME}/.lein" ]] && rm -rf "${HOME}/.lein"
-  # TODO: deleting these files seemed necessary a few years ago; check again.
+
   local karabiner_dir="Library/Application Support/Karabiner"
   local karabiner_elements_dir=".config/karabiner"
+  local ssh_dir=".ssh"
+  # TODO: deleting these files seemed necessary a few years ago; check again.
   mkdir -p "${HOME}/${karabiner_dir}" && rm -f "${HOME}/${karabiner_dir}/private.xml"
   mkdir -p "${HOME}/${karabiner_elements_dir}" && rm -f "${HOME}/${karabiner_elements_dir}/karabiner.json"
+  mkdir -p "${HOME}/${ssh_dir}" && rm -f "${HOME}/${ssh_dir}/config"
 
   # Link all the config files
   link "bash/bashrc"              ".bashrc"
@@ -169,6 +172,7 @@ link_dotfiles() {
   link "lein"                     ".lein"
   link "shell/curlrc"             ".curlrc"
   link "slate/slate"              ".slate"
+  link "ssh/config"               "${ssh_dir}/config"
   link "tmux/tmux.conf"           ".tmux.conf"
 }
 
