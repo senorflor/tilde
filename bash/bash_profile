@@ -21,12 +21,20 @@ do
 done
 unset files
 
-# We only use `brew` after it has been added to the PATH
-# Source Bash completion (installed via Homebrew)
-bash_completion_path="$(brew --prefix)/etc/bash_completion"
-if [[ -r $bash_completion_path ]]; then
-    source $bash_completion_path
-fi
+# We only use `brew` after it has been added to the PATH, but want to
+# source these files based on wherever brew is.
+declare -a post_brew_files=(
+    "$(brew --prefix)/etc/bash_completion"
+    "$(brew --prefix)/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.bash.inc"
+    "$(brew --prefix)/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.bash.inc"
+)
+for index in ${!post_brew_files[*]}
+do
+    if [[ -r ${post_brew_files[$index]} ]]; then
+        source ${post_brew_files[$index]}
+    fi
+done
+unset post_brew_files
 
 # start *env shims
 declare -a shims=(
