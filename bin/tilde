@@ -75,6 +75,11 @@ ensure_deps_installed() {
     print_header "End: Installing xCode CLI tools"
   fi
 
+  # Ensure developer mode is enabled TODO: sometimes dialog, sometimes
+  # prompt; understand which, when, why, then make this more silent in
+  # the case that it is already enabled.
+  DevToolsSecurity -enable
+
   # Ensure Homebrew is present
   if ! cmd_exists 'brew'; then
     print_header "Start: Installing Homebrew"
