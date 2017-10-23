@@ -139,7 +139,6 @@ install_packages() {
   brew tap homebrew/bundle
   brew bundle --file="${TILDE_DIRECTORY}/brew/Brewfile"
   print_header "End: Installing brew packages"
-  install_rustup
   print_header "Outdated Homebrew packages (run \`brew upgrade\` to upgrade):"
   brew outdated
   print_header "Outdated Mac App Store packages (run \`mas upgrade\` to upgrade):"
@@ -178,21 +177,6 @@ link_dotfiles() {
   link "slate/slate"              ".slate"
   link "ssh/config"               "${ssh_dir}/config"
   link "tmux/tmux.conf"           ".tmux.conf"
-}
-
-install_rustup() {
-  if ! cmd_exists rustup; then
-    local pr_merged pr_url="https://api.github.com/repos/Homebrew/homebrew-core/pulls/9617"
-    pr_merged=$(curl -f "$pr_url" 2>/dev/null | grep -ce '"merged".*true')
-    if [[ $pr_merged -eq 1 ]]; then
-      brew install rustup
-      echo "rustup installed via brew: please remove install_rustup() from"
-      echo "${TILDE_DIRECTORY}/bin/tilde and add rustup to tilde's Brewfile"
-    else
-      curl https://sh.rustup.rs -sSf | bash
-      source "${HOME}/.cargo/env"
-    fi
-  fi
 }
 
 update_osx_defaults() {
