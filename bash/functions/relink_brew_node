@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 
 # Link Homebrew's current version of node into nodenv's versions
 # directory for accessibility via nodenv shims. Yucky hax alert!
