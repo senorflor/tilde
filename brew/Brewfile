@@ -48,9 +48,8 @@ cask 'java9-beta'
 # OS/Environment mod apps
 cask 'dropbox'
 cask 'slate'
-# A patched version of karabiner-elements is installed for Sierra
-# elsewhere, since karabiner no longer works there.
 cask 'karabiner' unless system "bin/version gt 10.11"
+cask 'karabiner-elements' unless system "bin/version lt 10.12"
 
 # Plane, lathe, chisel, etc.
 # (lots of machines have Chrome pre-installed, which brew cask doesn't handle well)
