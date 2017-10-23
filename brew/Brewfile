@@ -34,7 +34,6 @@ brew 'postgres'
 brew 'node' # lots of internet noise around this; evaluate.
 brew 'nodenv'
 brew 'npm'
-brew 'yarn'
 
 # Ruby
 brew 'rbenv'
