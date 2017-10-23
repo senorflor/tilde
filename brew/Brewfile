@@ -18,6 +18,10 @@ brew 'awscli'
 brew 'azure-cli'
 brew 'kubernetes-cli'
 
+# Turtles all the way down
+cask 'virtualbox'
+cask 'minikube'
+
 # Editors
 brew 'emacs', args: ['with-cocoa', 'with-gnutls', 'srgb']
 cask 'macdown'
