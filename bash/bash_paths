@@ -25,14 +25,14 @@ declare -a dirs_to_append=(
     "$(brew --prefix)/opt/go/libexec/bin"
     "$HOME/Library/Android/sdk/tools"
     "$HOME/Library/Android/sdk/platform-tools"
-    "$HOME/.cargo/bin:$PATH"
+    "$HOME/.cargo/bin"
 )
 
 # Prepend directories to PATH
 for index in ${!dirs_to_prepend[*]}
 do
-    if [ -d ${dirs_to_prepend[$index]} ]; then
-        # If these directories exist, then prepend them to existing PATH
+    if [ -d "${dirs_to_prepend[$index]}" ]; then
+        # If these dirs exist, then prepend them to existing PATH
         PATH="${dirs_to_prepend[$index]}:$PATH"
     fi
 done
@@ -41,7 +41,7 @@ done
 for index in ${!dirs_to_append[*]}
 do
     if [ -d "${dirs_to_append[$index]}" ]; then
-        # If these bins exist, then append them to existing PATH
+        # If these dirs exist, then append them to existing PATH
         PATH="$PATH:${dirs_to_append[$index]}"
     fi
 done

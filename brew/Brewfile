@@ -35,6 +35,9 @@ brew 'yarn'
 # Ruby
 brew 'rbenv'
 
+# Rust
+brew 'rustup-init'
+
 # Python
 brew 'pyenv'
 brew 'pyenv-virtualenv'
