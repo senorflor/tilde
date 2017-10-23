@@ -1,4 +1,4 @@
-tap  'caskroom/versions' # for e.g. Java 9
+tap 'caskroom/versions' # for e.g. Java 9
 brew 'mas' # for Mac App Store stuff
 
 # Bash and general CLI tools
@@ -44,7 +44,6 @@ brew 'pyenv-virtualenv'
 
 # Java
 brew 'jenv'
-cask 'java7'
 cask 'java'
 cask 'java9-beta'
 
