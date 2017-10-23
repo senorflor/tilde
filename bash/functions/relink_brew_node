@@ -1,0 +1,42 @@
+#/bin/bash
+
+# Link Homebrew's current version of node into nodenv's versions
+# directory for accessibility via nodenv shims. Yucky hax alert!
+relink_brew_node() {
+  
+  # There is likely a better way, but we want the actively linked version
+  local brew_root=$(brew --prefix)
+  local nodenv_root=$(nodenv root 2> /dev/null)
+  local brew_node_version="$(realpath "$brew_root/bin/node" \
+                             | sed -E 's/.*([0-9]+\.[0-9]+\.[0-9](_[0-9]+)?).*/\1/')"
+  [[ -z "$brew_node_version" ]] && echo "No homebrew-installed node was found" && return 1
+  [[ -z "nodenv_root" || ! -d "$nodenv_root" ]] && echo "nodenv is not installed" && return 1
+
+  # Link the brew-installed node version to a "homebrew" folder in
+  # .nodenv/versions. Should probably condition the node_modules part
+  # on whether npm was installed alongside node (there is a flag to
+  # not do this).
+  local brew_bin_path="$brew_root/bin"
+  local brew_node_modules="$brew_root/lib/node_modules"
+  local nodenv_dir="$nodenv_root/versions/homebrew"
+  local nodenv_bin_path="$nodenv_dir/bin"
+  [[ ! -d "$nodenv_dir" ]] && mkdir -p "$nodenv_bin_path" \
+                           && mkdir -p "$nodenv_dir/lib" \
+                           && ln -s "$brew_node_modules" "$nodenv_dir/lib/node_modules"
+
+  # Remove old shims
+  rm -f $nodenv_bin_path/*
+
+  # Add new shims
+  ln -s $(realpath "$brew_bin_path/node") "$nodenv_dir/bin/node"
+  for file in $(ls "$brew_bin_path"); do
+    if [[ $(realpath "$brew_bin_path/$file") == *"/lib/node_modules"* ]]; then
+       ln -s "$(realpath "$brew_bin_path/$file")" "$nodenv_dir/bin/$file"
+     fi
+   done
+
+  # nodenv rehash TODO: allow this script to take scopes like global,
+  # shell, local, etc.
+  nodenv global homebrew
+  nodenv rehash
+}
