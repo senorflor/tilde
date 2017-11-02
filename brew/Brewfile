@@ -61,6 +61,7 @@ cask 'karabiner-elements' unless system "bin/version lt 10.12"
 cask 'google-chrome' unless system "test -f '/Applications/Google\ Chrome.app/Contents/Info.plist'"
 cask 'iterm2'
 cask 'postman'
+cask 'android-studio'
 
 # All mas stuff so that password prompt comes as late as possible
 mas '1Password', id: 443987910
