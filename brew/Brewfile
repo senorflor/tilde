@@ -1,4 +1,4 @@
-tap  'caskroom/versions' # for e.g. Java 9
+tap 'caskroom/versions' # for e.g. Java 9
 brew 'mas' # for Mac App Store stuff
 
 # Bash and general CLI tools
@@ -18,6 +18,10 @@ brew 'awscli'
 brew 'azure-cli'
 brew 'kubernetes-cli'
 
+# Turtles all the way down
+cask 'virtualbox'
+cask 'minikube'
+
 # Editors
 brew 'emacs', args: ['with-cocoa', 'with-gnutls', 'srgb']
 cask 'macdown'
@@ -30,7 +34,6 @@ brew 'postgres'
 brew 'node' # lots of internet noise around this; evaluate.
 brew 'nodenv'
 brew 'npm'
-brew 'yarn'
 
 # Ruby
 brew 'rbenv'
@@ -44,7 +47,6 @@ brew 'pyenv-virtualenv'
 
 # Java
 brew 'jenv'
-cask 'java7'
 cask 'java'
 cask 'java9-beta'
 
@@ -59,6 +61,7 @@ cask 'karabiner-elements' unless system "bin/version lt 10.12"
 cask 'google-chrome' unless system "test -f '/Applications/Google\ Chrome.app/Contents/Info.plist'"
 cask 'iterm2'
 cask 'postman'
+cask 'android-studio'
 
 # All mas stuff so that password prompt comes as late as possible
 mas '1Password', id: 443987910

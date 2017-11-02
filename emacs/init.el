@@ -45,6 +45,7 @@
 
                    ;; Al Gore
                       web-mode
+                      prettier-js
 
                    ;; Elm
                       elm-mode)
@@ -174,16 +175,28 @@
 
 
 ;;; Al Gore
+(require 'web-mode)
+(require 'prettier-js)
+;; From https://github.com/prettier/prettier-emacs
+(defun enable-minor-mode (my-pair)
+  "Enable minor mode if filename match the regexp.  MY-PAIR is a cons cell (regexp . minor-mode)."
+  (if (buffer-file-name)
+      (if (string-match (car my-pair) buffer-file-name)
+      (funcall (cdr my-pair)))))
 (defun its-a-web-mode-hook ()
   "Web mode customizer"
   (setq web-mode-markup-indent-offset 2)
   (setq web-mode-css-indent-offset 2)
-  (setq web-mode-code-indent-offset 2))
+  (setq web-mode-code-indent-offset 2)
+  (enable-minor-mode
+   '("\\.jsx?\\'" . prettier-js-mode)))
+(setq prettier-js-args '(
+  "--trailing-comma" "all"
+  "--single-quote" "true"
+  "--print-width" "100"
+))
 (add-hook 'web-mode-hook 'its-a-web-mode-hook)
-;; it's just JSX, don't overreact
-(require 'web-mode)
-(add-to-list 'auto-mode-alist '("\\.js\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.jsx\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.jsx?\\'" . web-mode))
 
 ;;; org mode!
 (require 'org-install)
