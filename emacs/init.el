@@ -44,6 +44,7 @@
                       haskell-mode
 
                    ;; Al Gore
+                      flow-minor-mode
                       web-mode
                       prettier-js
 
@@ -170,33 +171,32 @@
      (add-to-list 'ac-modes 'cider-mode)
      (add-to-list 'ac-modes 'cider-repl-mode)))
 
-
-
-
-
 ;;; Al Gore
 (require 'web-mode)
 (require 'prettier-js)
+(require 'flow-minor-mode)
 ;; From https://github.com/prettier/prettier-emacs
 (defun enable-minor-mode (my-pair)
   "Enable minor mode if filename match the regexp.  MY-PAIR is a cons cell (regexp . minor-mode)."
   (if (buffer-file-name)
       (if (string-match (car my-pair) buffer-file-name)
       (funcall (cdr my-pair)))))
-(defun its-a-web-mode-hook ()
+(defun customize-web-mode-formatting ()
   "Web mode customizer"
   (setq web-mode-markup-indent-offset 2)
   (setq web-mode-css-indent-offset 2)
   (setq web-mode-code-indent-offset 2)
   (enable-minor-mode
-   '("\\.jsx?\\'" . prettier-js-mode)))
-(setq prettier-js-args '(
-  "--trailing-comma" "all"
-  "--single-quote" "true"
-  "--print-width" "100"
-))
-(add-hook 'web-mode-hook 'its-a-web-mode-hook)
+   '("\\.jsx?\\'" . prettier-js-mode))
+  (if (equal web-mode-content-type "javascript")
+      (web-mode-set-content-type "jsx"))
+  (setq prettier-js-args '(
+    "--trailing-comma" "all"
+    "--single-quote" "true"
+    "--print-width" "100")))
 (add-to-list 'auto-mode-alist '("\\.jsx?\\'" . web-mode))
+(add-hook 'web-mode-hook 'customize-web-mode-formatting)
+(add-hook 'web-mode-hook 'flow-minor-enable-automatically)
 
 ;;; org mode!
 (require 'org-install)
@@ -249,7 +249,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (projectile elm-mode web-mode haskell-mode go-mode paredit clojurescript-mode ac-cider groovy-mode yaml-mode markdown-mode undo-tree rainbow-delimiters dash))))
+    (flow-minor-mode projectile elm-mode web-mode haskell-mode go-mode paredit clojurescript-mode ac-cider groovy-mode yaml-mode markdown-mode undo-tree rainbow-delimiters dash))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
