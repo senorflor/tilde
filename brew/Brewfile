@@ -1,4 +1,5 @@
 tap 'caskroom/versions' # for e.g. Java 9
+tap 'pivotal/tap' # for springboot
 brew 'mas' # for Mac App Store stuff
 
 # Bash and general CLI tools
@@ -47,9 +48,10 @@ brew 'pyenv'
 brew 'pyenv-virtualenv'
 
 # Java
+brew 'maven'
+brew 'springboot'
 brew 'jenv'
 cask 'java'
-cask 'java9-beta'
 
 # OS/Environment mod apps
 cask 'dropbox'
