@@ -69,6 +69,16 @@ cask 'karabiner-elements' unless system "bin/version lt 10.12"
 # Plane, lathe, chisel, etc.
 # (lots of machines have Chrome pre-installed, which brew cask doesn't handle well)
 cask 'google-chrome' unless system "test -f '/Applications/Google\ Chrome.app/Contents/Info.plist'"
+cask 'google-chrome-canary'
+cask 'firefox'
+# Silly bug either in firefoxnightly formula or in my local homebrew state after a Ctrl-C, so manually installed it, meh:
+cask 'firefoxnightly' unless system "test -f '/Applications/Firefox\ Nightly.app/Contents/Info.plist'"
+cask 'opera'
+cask 'opera-developer'
+cask 'safari-technology-preview'
+cask 'vivaldi'
+brew 'lynx'
+
 cask 'iterm2'
 cask 'postman'
 cask 'android-studio'
