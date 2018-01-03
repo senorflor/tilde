@@ -58,4 +58,4 @@ fi
 # which requires the pyenv-virtualenv plugin (installed via
 # brew/Brewfile). Here we initialize it after pyenv itself has already
 # been initialized:
-eval "$(pyenv virtualenv-init -)"
+hash pyenv &> /dev/null && eval "$(pyenv virtualenv-init -)"
