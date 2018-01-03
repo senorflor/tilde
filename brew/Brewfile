@@ -28,6 +28,9 @@ cask 'minikube'
 brew 'emacs', args: ['with-cocoa', 'with-gnutls', 'srgb']
 cask 'macdown'
 
+# Cross language/framework env management (trial!)
+brew 'asdf'
+
 # DBs
 brew 'mongo'
 brew 'postgres'

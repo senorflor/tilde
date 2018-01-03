@@ -49,6 +49,11 @@ do
     hash ${shim} &> /dev/null && eval "$(${shim} init -)"
 done
 
+# Trial asdf (https://github.com/asdf-vm/asdf)
+if [[ -r "/usr/local/opt/asdf/asdf.sh" ]]; then
+    source /usr/local/opt/asdf/asdf.sh
+fi
+
 # For pyenv, we want to manage pip and conda envs/packages via pyenv,
 # which requires the pyenv-virtualenv plugin (installed via
 # brew/Brewfile). Here we initialize it after pyenv itself has already
