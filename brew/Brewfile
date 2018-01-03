@@ -41,6 +41,9 @@ brew 'node' # lots of internet noise around this; evaluate.
 brew 'nodenv'
 brew 'npm'
 
+# Dart
+brew 'cocoapods' # for flutter
+
 # Ruby
 brew 'rbenv'
 
