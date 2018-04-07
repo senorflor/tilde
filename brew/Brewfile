@@ -82,6 +82,7 @@ cask 'opera'
 cask 'opera-developer'
 cask 'safari-technology-preview'
 cask 'vivaldi'
+cask 'brave'
 brew 'lynx'
 
 cask 'iterm2'
