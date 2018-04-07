@@ -22,6 +22,8 @@ brew 'kubernetes-cli'
 
 # Turtles all the way down
 cask 'virtualbox'
+cask 'vagrant'
+brew 'vagrant-completion'
 cask 'minikube'
 brew 'terraform'
 
