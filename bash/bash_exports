@@ -36,3 +36,15 @@ fi
 if [[ -d "$HOME/Library/Android/sdk" ]]; then
   export ANDROID_HOME=~/Library/Android/sdk
 fi
+
+# Golang path setup
+if hash go &> /dev/null; then
+  export GOPATH="$HOME/go"
+  if hash brew &> /dev/null; then
+    export GOROOT="$(brew --prefix)/opt/go/libexec"
+  else
+    # Assuming default brew location here, because haven't installed
+    # brew yet at this point on a new tilde run :(
+    export GOROOT="/usr/local/opt/go/libexec"
+  fi
+fi

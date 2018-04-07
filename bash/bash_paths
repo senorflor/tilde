@@ -2,9 +2,6 @@
 
 # bash_paths
 
-# Language-specific paths
-GOPATH="$HOME/go"
-
 # Directories to be prepended to PATH
 declare -a dirs_to_prepend=(
     "/usr/local/bin" # Ensure that this bin always takes precedence over `/usr/bin`

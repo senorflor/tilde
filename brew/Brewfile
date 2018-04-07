@@ -60,6 +60,9 @@ brew 'springboot'
 brew 'jenv'
 cask 'java'
 
+# Golang
+brew 'go'
+
 # OS/Environment mod apps
 cask 'dropbox'
 cask 'slate'
