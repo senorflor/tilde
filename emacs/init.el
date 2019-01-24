@@ -189,14 +189,15 @@
   (setq web-mode-markup-indent-offset 2)
   (setq web-mode-css-indent-offset 2)
   (setq web-mode-code-indent-offset 2)
-  (enable-minor-mode
-   '("\\.jsx?\\'" . prettier-js-mode))
+  ;; (enable-minor-mode
+  ;;  '("\\.jsx?\\'" . prettier-js-mode))
   (if (equal web-mode-content-type "javascript")
       (web-mode-set-content-type "jsx"))
-  (setq prettier-js-args '(
-    "--trailing-comma" "all"
-    "--single-quote" "true"
-    "--print-width" "100")))
+  ;; (setq prettier-js-args '(
+  ;;   "--trailing-comma" "all"
+  ;;   "--single-quote" "true"
+  ;;   "--print-width" "100"))
+)
 (add-to-list 'auto-mode-alist '("\\.jsx?\\'" . web-mode))
 (add-hook 'web-mode-hook 'customize-web-mode-formatting)
 (add-hook 'web-mode-hook 'flow-minor-enable-automatically)
