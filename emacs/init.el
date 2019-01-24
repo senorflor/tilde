@@ -1,8 +1,6 @@
 ;;; Slather with elisp
 (require 'package)
 (add-to-list 'package-archives
-  '("marmalade" . "http://marmalade-repo.org/packages/") t)
-(add-to-list 'package-archives
   '("melpa" . "http://melpa.milkbox.net/packages/") t)
 (setq package-archive-enable-alist '(("melpa" deft magit)))
 (package-initialize)
@@ -12,7 +10,6 @@
 (defvar my-packages '(
                    ;; General
                       dash
-                      ido-ubiquitous
                       magit
                       org
                       projectile
