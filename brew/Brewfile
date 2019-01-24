@@ -65,6 +65,10 @@ cask 'java'
 # Golang
 brew 'go'
 
+# Human (mostly english)
+cask 'xquartz'
+brew 'wordnet'
+
 # OS/Environment mod apps
 cask 'dropbox'
 cask 'slate'
