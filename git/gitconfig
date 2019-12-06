@@ -1,4 +1,7 @@
 [alias]
+    # `git aliases`: list git aliases to remember what's in here periodically :)
+    aliases = config --get-regexp "^alias\\."
+
     # https://git.wiki.kernel.org/articles/a/l/i/Aliases.html
 
     # `git remote prune origin`: remove remote-tracking branches that were deleted from the remote repo
