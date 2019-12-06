@@ -43,6 +43,10 @@
                    ;; Haskell
                       haskell-mode
 
+                   ;; Rust
+                      flycheck-rust
+                      rust-mode
+
                    ;; Al Gore
                       flow-minor-mode
                       web-mode
@@ -177,6 +181,10 @@
   '(progn
      (add-to-list 'ac-modes 'cider-mode)
      (add-to-list 'ac-modes 'cider-repl-mode)))
+
+;;; Rust
+(with-eval-after-load 'rust-mode
+  (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
 
 ;;; Al Gore
 (require 'web-mode)
