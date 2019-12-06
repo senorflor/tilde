@@ -10,6 +10,9 @@
 (defvar my-packages '(
                    ;; General
                       dash
+                      exec-path-from-shell
+                      flycheck
+                      ido-ubiquitous
                       magit
                       org
                       projectile
@@ -40,9 +43,9 @@
                    ;; Haskell
                       haskell-mode
 
-                   ;; Python
-                      conda
-                      anaconda-mode
+                   ;; Rust
+                      flycheck-rust
+                      rust-mode
 
                    ;; Al Gore
                       flow-minor-mode
@@ -51,9 +54,12 @@
                       tide ; Typescript
                       company ; optional tide dep
 
+                   ;; infrastructure
+                      terraform-mode
+
                    ;; Elm
                       elm-mode)
-  "Packages required at launchtime")
+  "Packages required at launchtime.")
 
 (dolist (p my-packages)
   (when (not (package-installed-p p))
@@ -68,6 +74,13 @@
 (setq inhibit-startup-screen t
       initial-scratch-message nil
       initial-major-mode 'org-mode)
+
+;; Fix MacOS path
+(when window-system
+  (require 'exec-path-from-shell)
+  (exec-path-from-shell-initialize))
+
+
 
 ;; Make window title more useful when windowed
 (when window-system
@@ -102,6 +115,9 @@
 (setq-default tab-width 2
 	      standard-indent 2
 	      indent-tabs-mode nil)
+
+;; Enable flycheck globally for syntax checking
+(add-hook 'after-init-hook #'global-flycheck-mode)
 
 ;; Move around windows spatially
 (global-set-key (kbd "C-x C-<up>") 'windmove-up)
@@ -142,14 +158,6 @@
 	    (setq
 	     c-basic-offset
 	     2)))
-;; (require 'malabar-mode)
-;; (load-file "~/projects/cedet/cedet-devel-load.el")
-;; (add-hook 'after-init-hook (lambda ()
-;; 			     (message "activate-malabar-mode")
-;; 			     (activate-malabar-mode)))
-
-;; (add-hook 'malabar-java-mode-hook 'flycheck-mode)
-;; (add-hook 'malabar-groovy-mode-hook 'flycheck-mode)
 
 ;;; Clojure
 (add-hook 'clojure-mode-hook 'paredit-mode)
@@ -174,8 +182,13 @@
      (add-to-list 'ac-modes 'cider-mode)
      (add-to-list 'ac-modes 'cider-repl-mode)))
 
+;;; Rust
+(with-eval-after-load 'rust-mode
+  (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
+
 ;;; Al Gore
 (require 'web-mode)
+(require 'flycheck)
 (require 'prettier-js)
 (require 'flow-minor-mode)
 ;; From https://github.com/prettier/prettier-emacs
@@ -184,23 +197,30 @@
   (if (buffer-file-name)
       (if (string-match (car my-pair) buffer-file-name)
       (funcall (cdr my-pair)))))
+(defun configure-web-mode-flycheck-checkers ()
+  ;; in order to have flycheck enabled in web-mode, add an entry to this
+  ;; cond that matches the web-mode engine/content-type/etc and returns the
+  ;; appropriate checker.
+  (-when-let (checker (cond
+                       ((string= web-mode-content-type "jsx")
+                        'javascript-eslint)))
+    (flycheck-mode)
+    (flycheck-select-checker checker)))
 (defun customize-web-mode-formatting ()
   "Web mode customizer"
   (setq web-mode-markup-indent-offset 2)
   (setq web-mode-css-indent-offset 2)
   (setq web-mode-code-indent-offset 2)
-  ;; (enable-minor-mode
-  ;;  '("\\.jsx?\\'" . prettier-js-mode))
   (if (equal web-mode-content-type "javascript")
-      (web-mode-set-content-type "jsx"))
-  ;; (setq prettier-js-args '(
-  ;;   "--trailing-comma" "all"
-  ;;   "--single-quote" "true"
-  ;;   "--print-width" "100"))
-)
-(add-to-list 'auto-mode-alist '("\\.jsx?\\'" . web-mode))
+      (web-mode-set-content-type "jsx")))
+(add-to-list 'auto-mode-alist '("\\.m?jsx?\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.json\\'" . web-mode))
+(flycheck-add-mode 'javascript-eslint 'web-mode)
+(setq web-mode-engines-alist
+      '(("javascript" . "\\.mjs\\'")))
 (add-hook 'web-mode-hook 'customize-web-mode-formatting)
 (add-hook 'web-mode-hook 'flow-minor-enable-automatically)
+(add-hook 'web-mode-hook 'configure-web-mode-flycheck-checkers)
 
 ;;; Tide
 (defun setup-tide-mode ()
@@ -280,6 +300,9 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   (quote
+    ("8db4b03b9ae654d4a57804286eb3e332725c84d7cdab38463cb6b97d5762ad26" "d677ef584c6dfc0697901a44b885cc18e206f05114c8a3b7fde674fce6180879" "8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" default)))
  '(package-selected-packages
    (quote
     (flow-minor-mode projectile elm-mode web-mode haskell-mode go-mode paredit clojurescript-mode ac-cider groovy-mode yaml-mode markdown-mode undo-tree rainbow-delimiters dash))))

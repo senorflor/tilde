@@ -1,4 +1,7 @@
 [alias]
+    # `git aliases`: list git aliases to remember what's in here periodically :)
+    aliases = config --get-regexp "^alias\\."
+
     # https://git.wiki.kernel.org/articles/a/l/i/Aliases.html
 
     # `git remote prune origin`: remove remote-tracking branches that were deleted from the remote repo
@@ -32,7 +35,7 @@
     logp = log --pretty=nice --date-order
 
     # Last few modified branches
-    recent = !git for-each-ref --count=10 --sort=-committerdate refs/heads --format='%(refname:short), edited %(committerdate:relative)'
+    recent = for-each-ref --count=10 --sort=-committerdate refs/heads --format='%(refname:short), edited %(committerdate:relative)'
 
     # Diffstat log
     logst = log --stat

@@ -48,3 +48,6 @@ if hash go &> /dev/null; then
     export GOROOT="/usr/local/opt/go/libexec"
   fi
 fi
+
+# Workaround for git looking for gettext.sh on path and pyenv shims breaking its resolution:
+export GIT_INTERNAL_GETTEXT_TEST_FALLBACKS=1

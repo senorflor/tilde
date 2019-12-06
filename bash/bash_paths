@@ -5,7 +5,6 @@
 # Directories to be prepended to PATH
 declare -a dirs_to_prepend=(
     "/usr/local/bin" # Ensure that this bin always takes precedence over `/usr/bin`
-    "/usr/local/ghc/bin"
     "$(yarn global bin)"
 )
 
@@ -18,11 +17,13 @@ declare -a dirs_to_append=(
     "$(brew --prefix coreutils)/libexec/gnubin" # Add brew-installed GNU core utilities bin
     "$(brew --prefix)/share/npm/bin" # Add npm-installed package bin
     "$HOME/.cabal/bin"
+    "$HOME/.ghcup/bin"
     "$GOPATH/bin"
     "$(brew --prefix)/opt/go/libexec/bin"
     "$HOME/Library/Android/sdk/tools"
     "$HOME/Library/Android/sdk/platform-tools"
     "$HOME/.cargo/bin"
+    "$HOME/bin"
 )
 
 # Prepend directories to PATH
