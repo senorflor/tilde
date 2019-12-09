@@ -10,7 +10,6 @@ declare -a files=(
     "$HOME/.tilde/bash/bash_prompt" # Custom bash prompt
     "$HOME/.bash_profile.local" # Local and private settings not under version control (e.g. git credentials)
     "$HOME/.tilde/bash/bash_paths" # Path modifications (must source after `.bash_profile.local` in case of custom `brew` location)
-    "/usr/local/bin/virtualenvwrapper.sh" # Python virtualenvwrapper
     $HOME/.tilde/bash/functions/* # Functions (don't quote this, otherwise globbing will fail)
 )
 for index in ${!files[*]}
@@ -23,11 +22,14 @@ unset files
 
 # We only use `brew` after it has been added to the PATH, but want to
 # source these files based on wherever brew is.
+brew_prefix=$(brew --prefix)
 declare -a post_brew_files=(
-    "$(brew --prefix)/etc/bash_completion"
-    "$(brew --prefix)/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.bash.inc"
-    "$(brew --prefix)/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.bash.inc"
+    "$brew_prefix/etc/bash_completion"
+    "$brew_prefix/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.bash.inc"
+    "$brew_prefix/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.bash.inc"
 )
+unset brew_prefix
+
 for index in ${!post_brew_files[*]}
 do
     if [[ -r ${post_brew_files[$index]} ]]; then
@@ -36,26 +38,7 @@ do
 done
 unset post_brew_files
 
-# start *env shims
-declare -a shims=(
-    jenv
-    nodenv
-    pyenv
-    rbenv
-)
-for index in ${!shims[*]}
-do
-    shim=${shims[$index]}
-    hash ${shim} &> /dev/null && eval "$(${shim} init -)"
-done
-
-# Trial asdf (https://github.com/asdf-vm/asdf)
+# Trial asdf (https://github.com/asdf-vm/asdf) for cross-lang version + env management
 if [[ -r "/usr/local/opt/asdf/asdf.sh" ]]; then
     source /usr/local/opt/asdf/asdf.sh
 fi
-
-# For pyenv, we want to manage pip and conda envs/packages via pyenv,
-# which requires the pyenv-virtualenv plugin (installed via
-# brew/Brewfile). Here we initialize it after pyenv itself has already
-# been initialized:
-hash pyenv &> /dev/null && eval "$(pyenv virtualenv-init -)"

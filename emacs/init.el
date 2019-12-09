@@ -270,13 +270,6 @@
                                   'indent-relative)))
 (add-to-list 'completion-ignored-extensions ".hi")
 
-;;; python
-(require 'conda)
-(conda-env-initialize-interactive-shells)
-(conda-env-initialize-eshell)
-(conda-env-autoactivate-mode t)
-(add-hook 'python-mode-hook 'anaconda-mode)
-
 
 ;;; Line numbering
 ;;; (from http://www.emacswiki.org/LineNumbers)

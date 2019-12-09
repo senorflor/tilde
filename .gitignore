@@ -9,3 +9,4 @@ emacs/projectile-bookmarks.eld
 emacs/smex-items
 lein/repl-history
 lein/indices/*
+brew/Brewfile.lock.json

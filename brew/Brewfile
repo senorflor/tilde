@@ -1,24 +1,35 @@
-tap 'caskroom/versions' # for e.g. Java 9
-tap 'pivotal/tap' # for springboot
+tap 'homebrew/cask-versions' # for e.g. Java 9
+# tap 'pivotal/tap' # for springboot
 brew 'mas' # for Mac App Store stuff
 
 # Bash and general CLI tools
 brew 'bash-completion'
-brew 'coreutils'
+brew 'coreutils' # more compatible utils, prefixed with `g`
 brew 'fswatch'
-brew 'htop'
-brew 'hub'
-brew 'jq'
-brew 'tmux'
 brew 'tree'
-brew 'watchman'
+
+# Process monitoring
+brew 'htop'
+
+# Data munging
+brew 'jq'
+brew 'yq'
+
+# Sessions
+brew 'tmux'
+
+# Requests and trusting them
+brew 'gnupg'
 brew 'wget'
 
-# Cloud CLIs
+# Cloud provider CLIs
 cask 'google-cloud-sdk'
 brew 'awscli'
 brew 'azure-cli'
+
+# Cluster orchestration and package mgmt CLIs
 brew 'kubernetes-cli'
+brew 'helm'
 
 # Turtles all the way down
 cask 'virtualbox'
@@ -28,42 +39,13 @@ cask 'minikube'
 brew 'terraform'
 
 # Editors
-brew 'emacs', args: ['with-cocoa', 'with-gnutls', 'srgb']
-cask 'macdown'
+brew 'emacs'
 
-# Cross language/framework env management (trial!)
+# Many-language version/package management
 brew 'asdf'
 
-# DBs
-brew 'mongo'
-brew 'postgres'
-
-# JS
-brew 'node' # lots of internet noise around this; evaluate.
-brew 'nodenv'
-brew 'npm'
-
-# Dart
-brew 'cocoapods' # for flutter
-
-# Ruby
-brew 'rbenv'
-
-# Rust
+# Rust (I like rustup, so keeping it around despite asdf for now)
 brew 'rustup-init'
-
-# Python
-brew 'pyenv'
-brew 'pyenv-virtualenv'
-
-# Java
-brew 'maven'
-brew 'springboot'
-brew 'jenv'
-cask 'java'
-
-# Golang
-brew 'go'
 
 # Human (mostly english)
 cask 'xquartz'
